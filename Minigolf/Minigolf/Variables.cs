@@ -11,5 +11,13 @@ namespace Minigolf
 {
     public static class V //Variables
     {
+        public static Random random = new Random();
+
+        public static int level = 1;
+
+        public static List<char[,]> gridMaps = new List<char[,]>();
+        public static List<Rectangle> listRectWall = new List<Rectangle>();
+
+        public static Ball ball;
     }
 }

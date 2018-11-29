@@ -26,7 +26,10 @@ namespace Minigolf
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = C.MAINWINDOW.X;
+            graphics.PreferredBackBufferHeight = C.MAINWINDOW.Y;
+            this.IsMouseVisible = true;
+            graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -40,7 +43,12 @@ namespace Minigolf
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            H.ReadFile();
+
+            C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, 15, 15, Color.Silver);
+            C.TEXTUREBALL = Content.Load<Texture2D>("0");
+
+            V.ball = new Ball(new Vector2(C.MAINWINDOW.X / 2, C.MAINWINDOW.Y / 2), C.TEXTUREBALL, spriteBatch);
         }
 
         /// <summary>
@@ -62,7 +70,7 @@ namespace Minigolf
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            V.ball.Update();
 
             base.Update(gameTime);
         }
@@ -73,9 +81,14 @@ namespace Minigolf
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkOliveGreen);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            H.DrawMap(spriteBatch, V.level);
+            V.ball.Draw();
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
