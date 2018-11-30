@@ -17,12 +17,16 @@ namespace Minigolf
         protected Vector2 speed;
         protected float radius;
         protected Rectangle rectangle;
+        protected bool cueOn = false;
+        protected Vector2 mousePosition;
+        protected MouseState oldState;
 
-        public Ball(Vector2 position, Texture2D texture, SpriteBatch sprite)
+        public Vector2 Position { get { return position; } }
+
+        public Ball(Texture2D texture, SpriteBatch sprite)
         {
-            this.position = position;
-            //this.speed = new Vector2(3, 3);
-            this.speed = new Vector2(V.random.Next(-5, 5), V.random.Next(-5, 5));
+            this.position = Vector2.Zero;
+            this.speed = Vector2.Zero;
             this.texture = texture;
             this.sprite = sprite;
             this.radius = C.BALLRADIUS;
@@ -79,20 +83,68 @@ namespace Minigolf
         public Vector2 NextPosition()
         {
             speed = speed * C.FRICTION;
+            if (H.Norme(speed) < 0.1f)
+                speed = Vector2.Zero;
             return position + speed;
+        }
+
+        public void ManageMouse()
+        {
+            MouseState newState = Mouse.GetState();
+            mousePosition = new Vector2(newState.X, newState.Y);
+            if ((newState.LeftButton == ButtonState.Pressed) && (oldState.LeftButton == ButtonState.Released))
+                cueOn = true;
+            if (newState.LeftButton == ButtonState.Pressed)
+                cueOn = true;
+            if (newState.LeftButton == ButtonState.Released)
+                cueOn = false;
+            if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
+            {
+                this.speed.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
+                this.speed.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
+            }
+            oldState = newState;
         }
 
         public void Update()
         {
-            FrameCollision();
-            WindowCollision();
-            position = NextPosition();
-            rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
+            switch (V.gameState)
+            {
+                case GAMESTATE.START:
+                    position = V.startPosition[V.level];
+                    speed = Vector2.Zero;
+                    V.gameState = GAMESTATE.PLAY;
+                    break;
+                case GAMESTATE.PLAY:
+                    FrameCollision();
+                    WindowCollision();
+                    position = NextPosition();
+                    rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
+
+                    ManageMouse();
+
+                    if (rectangle.Intersects(V.endPositionRect[V.level]))
+                    {
+                        if (++V.level <= C.MAXLEVEL)
+                        {
+                            V.gameState = GAMESTATE.START;
+                        }
+                        else
+                        {
+                            V.gameState = GAMESTATE.END;
+                        }
+                    }
+                    break;
+
+            }
+            
         }
 
         public void Draw()
         {
             sprite.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
+            if (cueOn)
+                H.DrawLine(this.sprite, C.TEXTURELINE, mousePosition, position);
         }
     }
 }

@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="Layout\Level0.txt" />
     <Content Include="Layout\Level1.txt" />
     <Content Include="Layout\Level2.txt" />
   </ItemGroup>

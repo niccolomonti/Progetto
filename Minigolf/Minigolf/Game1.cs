@@ -11,6 +11,7 @@ namespace Minigolf
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Ball ball;
 
         public Game1()
         {
@@ -45,10 +46,12 @@ namespace Minigolf
 
             H.ReadFile();
 
-            C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, 15, 15, Color.Silver);
+            C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
+            C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
             C.TEXTUREBALL = Content.Load<Texture2D>("0");
+            C.TEXTUREHOLE = Content.Load<Texture2D>("end");
 
-            V.ball = new Ball(new Vector2(C.MAINWINDOW.X / 2, C.MAINWINDOW.Y / 2), C.TEXTUREBALL, spriteBatch);
+            ball = new Ball(C.TEXTUREBALL, spriteBatch);
         }
 
         /// <summary>
@@ -70,7 +73,7 @@ namespace Minigolf
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            V.ball.Update();
+            ball.Update();
 
             base.Update(gameTime);
         }
@@ -85,8 +88,18 @@ namespace Minigolf
 
             spriteBatch.Begin();
 
-            H.DrawMap(spriteBatch, V.level);
-            V.ball.Draw();
+            //controllo start program
+            //----------
+
+            if (V.level <= C.MAXLEVEL)
+            {
+                H.DrawMap(spriteBatch, V.level);
+                ball.Draw();
+            }
+            else
+            {
+                //end program
+            }
 
             spriteBatch.End();
 
