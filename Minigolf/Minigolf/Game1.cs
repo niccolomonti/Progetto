@@ -1,6 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Minigolf.Sprites;
+using Minigolf.Models;
 
 namespace Minigolf
 {
@@ -12,6 +19,8 @@ namespace Minigolf
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Ball ball;
+
+        private List<Sprite> sprites;
 
         public Game1()
         {
@@ -49,9 +58,32 @@ namespace Minigolf
             C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
             C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
             C.TEXTUREBALL = Content.Load<Texture2D>("0");
-            C.TEXTUREHOLE = Content.Load<Texture2D>("end");
+            C.TEXTUREHOLE = Content.Load<Texture2D>("end");            
 
             ball = new Ball(C.TEXTUREBALL, spriteBatch);
+
+            var animations = new Dictionary<string, Animation>()
+            {
+                { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp"), 5) },
+                { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown"), 5) },
+                { "WalkLeft", new Animation(Content.Load<Texture2D>("Player/WalkingLeft"), 5) },
+                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight"), 5) }
+            };
+
+            sprites = new List<Sprite>() // non so se ci servirà una lista...
+            {
+                new Sprite(animations)
+                {
+                    Position = V.startPosition[V.level],
+                    input = new Input()
+                    {
+                        Up = Keys.Up,
+                        Down = Keys.Down,
+                        Left = Keys.Left,
+                        Right = Keys.Right
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -75,6 +107,9 @@ namespace Minigolf
 
             ball.Update();
 
+            foreach (var sprite in sprites)
+                sprite.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -95,6 +130,9 @@ namespace Minigolf
             {
                 H.DrawMap(spriteBatch, V.level);
                 ball.Draw();
+
+                foreach (var sprite in sprites)
+                    sprite.Draw(spriteBatch);
             }
             else
             {
