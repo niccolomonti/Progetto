@@ -68,16 +68,7 @@ namespace Minigolf.Sprites
 
         protected virtual void SetAnimation()
         {
-            if (velocity.X > 0)
-                animationManager.Play(animations["WalkRight"]);
-            else if (velocity.X < 0)
-                animationManager.Play(animations["WalkLeft"]);
-            else if (velocity.Y > 0)
-                animationManager.Play(animations["WalkDown"]);
-            else if (velocity.Y < 0)
-                animationManager.Play(animations["WalkUp"]);
-            else
-                animationManager.Stop();
+            
         }
 
         public virtual void Update(GameTime gameTime/*, List<Sprite> sprites*/)

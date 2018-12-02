@@ -17,8 +17,7 @@ namespace Minigolf
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Ball ball;
+        SpriteBatch spriteBatch;      
 
         private List<Sprite> sprites;
 
@@ -58,11 +57,10 @@ namespace Minigolf
             C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
             C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
             C.TEXTUREBALL = Content.Load<Texture2D>("0");
-            C.TEXTUREHOLE = Content.Load<Texture2D>("end");            
+            C.TEXTUREHOLE = Content.Load<Texture2D>("end");
+           
 
-            ball = new Ball(C.TEXTUREBALL, spriteBatch);
-
-            var animations = new Dictionary<string, Animation>()
+            var playerAnimations = new Dictionary<string, Animation>()
             {
                 { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp"), 5) },
                 { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown"), 5) },
@@ -70,9 +68,15 @@ namespace Minigolf
                 { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight"), 5) }
             };
 
-            sprites = new List<Sprite>() // non so se ci servirà una lista...
+            // sarà da aggiungere ( e modificare, ovviamente) quando inseriremo l'animazione per la pallina
+            //var ballAnimations = new Dictionary<string, Animation>()
+            //{
+            //    { "MotionLess", new Animation(Content.Load<Texture2D>("0"), 1) }
+            //};
+
+            sprites = new List<Sprite>()
             {
-                new Sprite(animations)
+                new Player(playerAnimations)
                 {
                     Position = V.startPosition[V.level],
                     input = new Input()
@@ -82,6 +86,21 @@ namespace Minigolf
                         Left = Keys.Left,
                         Right = Keys.Right
                     }
+                },
+
+                new Ball(C.TEXTUREBALL)
+                {
+                    Position = V.startPosition[V.level],
+
+                    // --- da controllare, non ha molto senso ... ---
+                    input = new Input()
+                    {
+                        Up = Keys.Up,
+                        Down = Keys.Down,
+                        Left = Keys.Left,
+                        Right = Keys.Right
+                    }
+                    // ------------------------
                 }
             };
         }
@@ -103,9 +122,7 @@ namespace Minigolf
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            ball.Update();
+                Exit();            
 
             foreach (var sprite in sprites)
                 sprite.Update(gameTime);
@@ -128,8 +145,7 @@ namespace Minigolf
 
             if (V.level <= C.MAXLEVEL)
             {
-                H.DrawMap(spriteBatch, V.level);
-                ball.Draw();
+                H.DrawMap(spriteBatch, V.level);                
 
                 foreach (var sprite in sprites)
                     sprite.Draw(spriteBatch);

@@ -6,29 +6,27 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Minigolf.Sprites;
+using Minigolf.Models;
 
 namespace Minigolf
 {
-    public class Ball
-    {
-        protected Texture2D texture;
-        protected SpriteBatch sprite;
-        protected Vector2 position;
-        protected Vector2 speed;
+    public class Ball : Sprite
+    {        
         protected float radius;
         protected Rectangle rectangle;
         protected bool cueOn = false;
         protected Vector2 mousePosition;
-        protected MouseState oldState;
+        protected MouseState oldState;        
 
-        public Vector2 Position { get { return position; } }
-
-        public Ball(Texture2D texture, SpriteBatch sprite)
+        public Ball(Texture2D theTexture): base(theTexture)
         {
-            this.position = Vector2.Zero;
-            this.speed = Vector2.Zero;
-            this.texture = texture;
-            this.sprite = sprite;
+            this.radius = C.BALLRADIUS;
+            this.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+        }
+
+        public Ball(Dictionary<string, Animation> theAnimaitions) : base(theAnimaitions)
+        {
             this.radius = C.BALLRADIUS;
             this.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
         }
@@ -58,34 +56,34 @@ namespace Minigolf
                 int x = rectCollision.Center.X - rectangle.Center.X;
                 int y = rectCollision.Center.Y - rectangle.Center.Y;
                 if (Math.Abs(x) > Math.Abs(y))
-                {
-                    speed.X = -speed.X;
+                {                    
+                    velocity.X = -velocity.X;
                 }
                 else
-                {
-                    speed.Y = -speed.Y;
+                {                   
+                    velocity.Y = -velocity.Y;
                 }
             }
         }
 
         public void WindowCollision()
         {
-            if (position.X - radius < 0)
-                speed.X = -speed.X;
-            if (position.Y - radius < 0)
-                speed.Y = -speed.Y;
-            if (position.X + radius > C.MAINWINDOW.X)
-                speed.X = -speed.X;
-            if (position.Y + radius > C.MAINWINDOW.Y)
-                speed.Y = -speed.Y;
+            if (position.X - radius < 0)                
+                velocity.X = -velocity.X;
+            if (position.Y - radius < 0)                
+                velocity.Y = -velocity.Y;
+            if (position.X + radius > C.MAINWINDOW.X)                
+                velocity.X = -velocity.X;
+            if (position.Y + radius > C.MAINWINDOW.Y)                
+                velocity.Y = -velocity.Y;
         }
 
         public Vector2 NextPosition()
         {
-            speed = speed * C.FRICTION;
-            if (H.Norme(speed) < 0.1f)
-                speed = Vector2.Zero;
-            return position + speed;
+            velocity = velocity * C.FRICTION;
+            if (H.Norme(velocity) < 0.1f)
+                velocity = Vector2.Zero;
+            return position + velocity;
         }
 
         public void ManageMouse()
@@ -100,19 +98,19 @@ namespace Minigolf
                 cueOn = false;
             if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
             {
-                this.speed.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
-                this.speed.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
+                velocity.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
+                velocity.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
             }
             oldState = newState;
         }
 
-        public void Update()
+        override public void Update(GameTime gameTime)
         {
             switch (V.gameState)
             {
                 case GAMESTATE.START:
                     position = V.startPosition[V.level];
-                    speed = Vector2.Zero;
+                    velocity = Vector2.Zero;
                     V.gameState = GAMESTATE.PLAY;
                     break;
                 case GAMESTATE.PLAY:
@@ -126,7 +124,7 @@ namespace Minigolf
                     if (rectangle.Intersects(V.endPositionRect[V.level]))
                     {
                         if (++V.level <= C.MAXLEVEL)
-                        {
+                        {                           
                             V.gameState = GAMESTATE.START;
                         }
                         else
@@ -140,11 +138,17 @@ namespace Minigolf
             
         }
 
-        public void Draw()
+        override protected void SetAnimation()
         {
-            sprite.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
+            // da modificare
+            animationManager.Play(animations["MotionLess"]);
+        }
+
+        override public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
             if (cueOn)
-                H.DrawLine(this.sprite, C.TEXTURELINE, mousePosition, position);
+                H.DrawLine(spriteBatch, C.TEXTURELINE, mousePosition, position);
         }
     }
 }
