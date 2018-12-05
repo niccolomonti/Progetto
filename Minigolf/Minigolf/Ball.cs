@@ -14,21 +14,26 @@ namespace Minigolf
     public class Ball : Sprite
     {        
         protected float radius;
-        protected Rectangle rectangle;
+        //protected Rectangle rectangle;
         protected bool cueOn = false;
         protected Vector2 mousePosition;
         protected MouseState oldState;        
+      
 
         public Ball(Texture2D theTexture): base(theTexture)
         {
-            this.radius = C.BALLRADIUS;
-            this.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+            radius = C.BALLRADIUS;
+            rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+
+            selected = false;
         }
 
         public Ball(Dictionary<string, Animation> theAnimaitions) : base(theAnimaitions)
         {
-            this.radius = C.BALLRADIUS;
-            this.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+            radius = C.BALLRADIUS;
+            rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+
+            selected = false;
         }
 
         public void FrameCollision()
@@ -91,15 +96,20 @@ namespace Minigolf
             MouseState newState = Mouse.GetState();
             mousePosition = new Vector2(newState.X, newState.Y);
             if ((newState.LeftButton == ButtonState.Pressed) && (oldState.LeftButton == ButtonState.Released))
+            {
                 cueOn = true;
+                selected = true; 
+            }
             if (newState.LeftButton == ButtonState.Pressed)
                 cueOn = true;
-            if (newState.LeftButton == ButtonState.Released)
-                cueOn = false;
+            if (newState.LeftButton == ButtonState.Released)            
+                cueOn = false;            
             if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
             {
                 velocity.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
                 velocity.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
+
+                selected = false;
             }
             oldState = newState;
         }
@@ -110,8 +120,12 @@ namespace Minigolf
             {
                 case GAMESTATE.START:
                     position = V.startPosition[V.level];
-                    velocity = Vector2.Zero;
-                    V.gameState = GAMESTATE.PLAY;
+                    velocity = Vector2.Zero;                    
+                    break;
+                case GAMESTATE.HITBALL:
+                    ManageMouse();
+                    break;
+                case GAMESTATE.GOTOBALL:                    
                     break;
                 case GAMESTATE.PLAY:
                     FrameCollision();
@@ -119,21 +133,11 @@ namespace Minigolf
                     position = NextPosition();
                     rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
 
-                    ManageMouse();
-
-                    if (rectangle.Intersects(V.endPositionRect[V.level]))
-                    {
-                        if (++V.level <= C.MAXLEVEL)
-                        {                           
-                            V.gameState = GAMESTATE.START;
-                        }
-                        else
-                        {
-                            V.gameState = GAMESTATE.END;
-                        }
-                    }
+                    if(velocity == Vector2.Zero)
+                        ManageMouse();
                     break;
-
+                case GAMESTATE.END:
+                    break;
             }
             
         }

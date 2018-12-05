@@ -21,33 +21,46 @@ namespace Minigolf
 
         override protected void SetAnimation()
         {
-            if (velocity.X > 0)
+            if (velocity.X > 0 && velocity.Y == 0)
                 animationManager.Play(animations["WalkRight"]);
-            else if (velocity.X < 0)
+            else if (velocity.X < 0 && velocity.Y == 0)
                 animationManager.Play(animations["WalkLeft"]);
-            else if (velocity.Y > 0)
+            else if (velocity.Y > 0 && velocity.X == 0)
                 animationManager.Play(animations["WalkDown"]);
-            else if (velocity.Y < 0)
+            else if (velocity.Y < 0 && velocity.X == 0)
                 animationManager.Play(animations["WalkUp"]);
+            else if (velocity.Y > 0 && velocity.X < 0)
+                animationManager.Play(animations["WalkDiagLeftDown"]);
+            else if (velocity.Y > 0 && velocity.X > 0)
+                animationManager.Play(animations["WalkDiagRightDown"]);
+            else if (velocity.Y < 0 && velocity.X < 0)
+                animationManager.Play(animations["WalkDiagLeftUp"]);
+            else if (velocity.Y < 0 && velocity.X > 0)
+                animationManager.Play(animations["WalkDiagRightUp"]);
             else
                 animationManager.Stop();
         }
 
         override protected void Move()
         {
-            if (Keyboard.GetState().IsKeyDown(input.Up))
-                velocity.Y -= speed;
-            if (Keyboard.GetState().IsKeyDown(input.Down))
-                velocity.Y += speed;
-            if (Keyboard.GetState().IsKeyDown(input.Left))
-                velocity.X -= speed;
-            if (Keyboard.GetState().IsKeyDown(input.Right))
-                velocity.X += speed;
-
+            if (Keyboard.GetState().IsKeyDown(input.Up))            
+                    velocity.Y -= speed;           
+            if (Keyboard.GetState().IsKeyDown(input.Down))            
+                    velocity.Y += speed;            
+            if (Keyboard.GetState().IsKeyDown(input.Left))            
+                    velocity.X -= speed;
+            if (Keyboard.GetState().IsKeyDown(input.Right))            
+                    velocity.X += speed;              
         }
 
         override public void Update(GameTime gameTime)
         {
+            Move();
+            SetAnimation();
+            animationManager.Update(gameTime);
+            Position += velocity;
+            velocity = Vector2.Zero;
+
             switch (V.gameState)
             {
                 case GAMESTATE.START:
@@ -56,14 +69,8 @@ namespace Minigolf
                     SetAnimation();
                     animationManager.Update(gameTime);                    
                     break;
-                case GAMESTATE.PLAY:
-                    Move();
-                    SetAnimation();
-                    animationManager.Update(gameTime);
-                    Position += velocity;
-                    velocity = Vector2.Zero;                    
+                default:
                     break;
-
             }
 
         }

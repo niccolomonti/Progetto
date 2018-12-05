@@ -30,5 +30,7 @@ namespace Minigolf
         public static float FRICTION = 0.997f;
 
         public static int CUEATTENUATION = 50;
+
+        public static float GETBALLDISTANCE = 10f;
     }
 }

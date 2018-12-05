@@ -13,14 +13,17 @@ namespace Minigolf.Sprites
 {
     public class Sprite
     {
-        protected Texture2D texture;
+        public Texture2D texture;
         public Input input;
-        public Vector2 position;
+        protected Vector2 position;
         public float speed = 1f;
-        public Vector2 velocity;
+        public Vector2 velocity;        
 
         protected AnimationManager animationManager;
-        protected Dictionary<string, Animation> animations; 
+        protected Dictionary<string, Animation> animations;
+
+        public Rectangle rectangle;
+        public bool selected;
 
         public Vector2 Position
         {

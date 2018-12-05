@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Minigolf.Sprites;
 using Minigolf.Models;
+using Minigolf;
 
 namespace Minigolf
 {
@@ -17,9 +18,12 @@ namespace Minigolf
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;      
+        SpriteBatch spriteBatch;
+        
+        SpriteFont font;
 
-        private List<Sprite> sprites;
+        
+        /*private*/public List<Sprite> sprites;
 
         public Game1()
         {
@@ -52,20 +56,25 @@ namespace Minigolf
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            font = Content.Load<SpriteFont>("font");
+
             H.ReadFile();
 
             C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
             C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
             C.TEXTUREBALL = Content.Load<Texture2D>("0");
             C.TEXTUREHOLE = Content.Load<Texture2D>("end");
-           
-
+            
             var playerAnimations = new Dictionary<string, Animation>()
             {
                 { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp"), 5) },
                 { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown"), 5) },
                 { "WalkLeft", new Animation(Content.Load<Texture2D>("Player/WalkingLeft"), 5) },
-                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight"), 5) }
+                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight"), 5) },
+                { "WalkDiagLeftDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftDown"), 5) },
+                { "WalkDiagRightDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightDown"), 5) },
+                { "WalkDiagLeftUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftUp"), 5) },
+                { "WalkDiagRightUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightUp"), 5) }
             };
 
             // sarà da aggiungere ( e modificare, ovviamente) quando inseriremo l'animazione per la pallina
@@ -122,10 +131,51 @@ namespace Minigolf
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();            
+                Exit();
 
             foreach (var sprite in sprites)
                 sprite.Update(gameTime);
+
+            switch (V.gameState)
+            {
+                case GAMESTATE.START:
+                    V.gameState = GAMESTATE.HITBALL;
+                    break;
+                case GAMESTATE.HITBALL:
+                    if (sprites[1].selected)
+                        V.gameState = GAMESTATE.PLAY;
+                    break;
+                case GAMESTATE.PLAY:
+                    if (sprites[1].rectangle.Intersects(V.endPositionRect[V.level]))
+                    {
+                        if (++V.level <= C.MAXLEVEL)
+                        {
+                            V.gameState = GAMESTATE.START;
+                        }
+                        else
+                        {
+                            V.gameState = GAMESTATE.END;
+                        }
+                    }
+                    else
+                    {
+                        if (sprites[1].velocity == Vector2.Zero && !sprites[1].selected)
+                        {
+                            //sprites[1].selected = false;
+                            V.gameState = GAMESTATE.GOTOBALL;
+                        }
+                    }
+                    break;
+                case GAMESTATE.GOTOBALL:
+                    //if (Vector2.Distance(new Vector2((sprites[0].position.X + sprites[0].texture.Width)/2, (sprites[0].position.Y + sprites[0].texture.Height) / 2),
+                    //                     new Vector2((sprites[1].position.X + sprites[1].texture.Width) / 2, (sprites[1].position.Y + sprites[1].texture.Height) / 2)) < C.GETBALLDISTANCE)
+                    if(Vector2.Distance(sprites[0].Position, sprites[1].Position) < C.GETBALLDISTANCE)
+                        V.gameState = GAMESTATE.HITBALL;
+                    break;
+                case GAMESTATE.END:
+                    break;
+            }            
+
 
             base.Update(gameTime);
         }
@@ -139,6 +189,9 @@ namespace Minigolf
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin();
+            spriteBatch.DrawString(font, V.gameState.ToString(), new Vector2(0, 0), Color.White);
+            spriteBatch.DrawString(font, Vector2.Distance(sprites[0].Position, sprites[1].Position).ToString(), new Vector2(0, 20), Color.White);
+
 
             //controllo start program
             //----------
@@ -154,6 +207,8 @@ namespace Minigolf
             {
                 //end program
             }
+
+
 
             spriteBatch.End();
 

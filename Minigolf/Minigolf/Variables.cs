@@ -9,9 +9,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minigolf
 {
-    public enum GAMESTATE { START, PLAY, END }; // START: posizione iniziale della pallina
-                                                // PLAY: la fase di gioco di un livello
-                                                // END: ... (vedremo se servirà)
+    public enum GAMESTATE { START, HITBALL, GOTOBALL, PLAY, END };
+                                            
     public static class V //Variables
     { 
         public static Random random = new Random();

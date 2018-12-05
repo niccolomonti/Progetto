@@ -33,7 +33,9 @@ namespace Minigolf.Managers
 
         public void Stop()
         {
-            animation.CurrentFrame = 0;
+            animation.CurrentFrame = 2; // dipende dagli sheet (potrebbe essere un problema se 
+                                        // si hanno sheet con gli sprite di idle in posizioni
+                                        // diverse
             timer = 0f;
         }
 
