@@ -15,7 +15,7 @@ namespace Minigolf
         public static Point PIXELSXPOINT = new Point(15);
         public static Point MAINWINDOW = MAINGRID * PIXELSXPOINT;
 
-        public static Texture2D TEXTURESILVER, TEXTURESTART, TEXTUREEND, TEXTUREHOLE, TEXTURELINE;
+        public static Texture2D TEXTURESILVER, TEXTURESTART, TEXTUREEND, TEXTUREHOLE, TEXTURELINE, TEXTURESAND, TEXTURECLIMB;
 
         public static int MAXLEVEL = 2;
         public static string[] FILENAME =
@@ -30,5 +30,11 @@ namespace Minigolf
         public static float FRICTION = 0.997f;
 
         public static int CUEATTENUATION = 50;
+
+        public static Point PIXELSXSAND = new Point(30, 30);
+        public static float SANDFRICTION = 0.9f;
+
+        public static Point PIXELSXCLIMB = new Point(30, 75);
+        public static float VELCLIMB = 0.05f;
     }
 }

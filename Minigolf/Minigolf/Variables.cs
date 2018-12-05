@@ -25,6 +25,12 @@ namespace Minigolf
         public static Vector2[] endPosition = new Vector2[C.MAXLEVEL + 1];
         public static Rectangle[] endPositionRect = new Rectangle[C.MAXLEVEL + 1];
 
+        public static List<Rectangle> listRectSand = new List<Rectangle>();
+        public static List<Rectangle> listClimbRight = new List<Rectangle>();
+        public static List<Rectangle> listClimbLeft = new List<Rectangle>();
+        public static List<Rectangle> listClimbTop = new List<Rectangle>();
+        public static List<Rectangle> listClimbBottom = new List<Rectangle>();
+
         public static GAMESTATE gameState = GAMESTATE.START;
     }
 }

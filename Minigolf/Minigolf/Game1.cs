@@ -12,6 +12,10 @@ namespace Minigolf
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Ball ball;
+        Point mousePosition;
+        SpriteFont font;
+        MouseState mouseState;
+        BoardGolf board;
 
         public Game1()
         {
@@ -43,6 +47,8 @@ namespace Minigolf
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = Content.Load<SpriteFont>("font");
+            board = new BoardGolf();
 
             H.ReadFile();
 
@@ -50,6 +56,8 @@ namespace Minigolf
             C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
             C.TEXTUREBALL = Content.Load<Texture2D>("0");
             C.TEXTUREHOLE = Content.Load<Texture2D>("end");
+            C.TEXTURESAND = H.CreateTexture(GraphicsDevice, C.PIXELSXSAND.X, C.PIXELSXSAND.Y, Color.Beige);
+            C.TEXTURECLIMB = Content.Load<Texture2D>("freccia");
 
             ball = new Ball(C.TEXTUREBALL, spriteBatch);
         }
@@ -74,6 +82,8 @@ namespace Minigolf
                 Exit();
 
             ball.Update();
+            mouseState = Mouse.GetState();
+            mousePosition = mouseState.Position;
 
             base.Update(gameTime);
         }
@@ -87,6 +97,7 @@ namespace Minigolf
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin();
+            spriteBatch.DrawString(font, "Mouse: " + mousePosition.X + "x" + mousePosition.Y, new Vector2(0, 0), Color.White);
 
             //controllo start program
             //----------
@@ -100,6 +111,7 @@ namespace Minigolf
             {
                 //end program
             }
+            board.Draw(spriteBatch);
 
             spriteBatch.End();
 

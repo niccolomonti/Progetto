@@ -80,10 +80,55 @@ namespace Minigolf
                 speed.Y = -speed.Y;
         }
 
+        public void SandCollision()
+        {
+            Rectangle centerBall = new Rectangle((int)position.X, (int)position.Y, 1, 1);
+            foreach (Rectangle sandRectangle in V.listRectSand)
+            {
+                if (sandRectangle.Intersects(centerBall))
+                {
+                    speed *= C.SANDFRICTION;
+                }
+            }
+        }
+
+        public void Climb()
+        {
+            Rectangle centerBall = new Rectangle((int)position.X, (int)position.Y, 1, 1);
+            foreach (Rectangle climbRectangle in V.listClimbRight)
+            {
+                if (climbRectangle.Intersects(centerBall))
+                {
+                    speed += new Vector2(-C.VELCLIMB, 0);
+                }
+            }
+            foreach (Rectangle climbRectangle in V.listClimbLeft)
+            {
+                if (climbRectangle.Intersects(centerBall))
+                {
+                    speed += new Vector2(C.VELCLIMB, 0);
+                }
+            }
+            foreach (Rectangle climbRectangle in V.listClimbTop)
+            {
+                if (climbRectangle.Intersects(centerBall))
+                {
+                    speed += new Vector2(0, C.VELCLIMB);
+                }
+            }
+            foreach (Rectangle climbRectangle in V.listClimbBottom)
+            {
+                if (climbRectangle.Intersects(centerBall))
+                {
+                    speed += new Vector2(0, -C.VELCLIMB);
+                }
+            }
+        }
+
         public Vector2 NextPosition()
         {
             speed = speed * C.FRICTION;
-            if (H.Norme(speed) < 0.1f)
+            if (H.Norme(speed) < 0.001f)
                 speed = Vector2.Zero;
             return position + speed;
         }
@@ -118,12 +163,15 @@ namespace Minigolf
                 case GAMESTATE.PLAY:
                     FrameCollision();
                     WindowCollision();
+                    SandCollision();
+                    Climb();
                     position = NextPosition();
                     rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
 
                     ManageMouse();
 
-                    if (rectangle.Intersects(V.endPositionRect[V.level]))
+                    Rectangle centerBall = new Rectangle((int)position.X, (int)position.Y, 1, 1);
+                    if (centerBall.Intersects(V.endPositionRect[V.level]))
                     {
                         if (++V.level <= C.MAXLEVEL)
                         {
@@ -135,7 +183,6 @@ namespace Minigolf
                         }
                     }
                     break;
-
             }
             
         }

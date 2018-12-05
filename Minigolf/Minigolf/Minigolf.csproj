@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Ball.cs" />
+    <Compile Include="BoardGolf.cs" />
     <Compile Include="Costants.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Helpers.cs" />

@@ -60,6 +60,11 @@ namespace Minigolf
         public static void DrawMap(SpriteBatch sprite, int level)
         {
             V.listRectWall.Clear();
+            V.listRectSand.Clear();
+            V.listClimbRight.Clear();
+            V.listClimbLeft.Clear();
+            V.listClimbTop.Clear();
+            V.listClimbBottom.Clear();
 
             for (int i = 0; i < C.MAINGRID.Y - 1; i++)
             {
@@ -71,8 +76,28 @@ namespace Minigolf
                             V.listRectWall.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT));
                             sprite.Draw(C.TEXTURESILVER, new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), C.TEXTURESILVER.Bounds, Color.White);
                             break;
-                        case 'E':
+                        case 'E': //fine
                             sprite.Draw(C.TEXTUREHOLE, new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), C.TEXTUREHOLE.Bounds, Color.White);
+                            break;
+                        case 'O': //sabbia
+                            V.listRectSand.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXSAND));
+                            sprite.Draw(C.TEXTURESAND, V.listRectSand.Last(), C.TEXTURESAND.Bounds, Color.White);
+                            break;
+                        case 'R': //salita verso destra
+                            V.listClimbRight.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, Invert(C.PIXELSXCLIMB)));
+                            sprite.Draw(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y), null, Color.White, -(float)Math.PI / 2, new Vector2(C.PIXELSXCLIMB.X, 0), 1, SpriteEffects.None, 0);
+                            break;
+                        case 'L': //salita verso sinistra
+                            V.listClimbLeft.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, Invert(C.PIXELSXCLIMB)));
+                            sprite.Draw(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y), null, Color.White, (float)Math.PI / 2, new Vector2(0, C.PIXELSXCLIMB.Y), 1, SpriteEffects.None, 0);
+                            break;
+                        case 'T': //salita verso alto
+                            V.listClimbTop.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXCLIMB));
+                            sprite.Draw(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y), null, Color.White, (float)Math.PI, new Vector2(C.PIXELSXCLIMB.X, C.PIXELSXCLIMB.Y), 1, SpriteEffects.None, 0);
+                            break;
+                        case 'B': // salita verso basso
+                            V.listClimbBottom.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXCLIMB));
+                            sprite.Draw(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y), null, Color.White, 0, new Vector2(), 1, SpriteEffects.None, 0);
                             break;
                     }
                 }
@@ -82,6 +107,11 @@ namespace Minigolf
         public static float Norme(Vector2 v)
         {
             return (float)Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2));
+        }
+
+        public static Point Invert(Point p)
+        {
+            return new Point(p.Y, p.X);
         }
 
         public static void DrawLine(SpriteBatch sprite, Texture2D texture, Vector2 start, Vector2 end)
