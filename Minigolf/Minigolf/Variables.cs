@@ -16,7 +16,7 @@ namespace Minigolf
     { 
         public static Random random = new Random();
 
-        public static int level = 0;
+        public static int level = 2;
 
         public static List<char[,]> gridMaps = new List<char[,]>();
         public static List<Rectangle> listRectWall = new List<Rectangle>();

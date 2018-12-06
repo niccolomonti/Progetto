@@ -22,6 +22,7 @@ namespace Minigolf
         protected MouseState oldState;
 
         public Vector2 Position { get { return position; } }
+        public Vector2 Speed { get { return speed; } }
 
         public Ball(Texture2D texture, SpriteBatch sprite)
         {
@@ -145,8 +146,11 @@ namespace Minigolf
                 cueOn = false;
             if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
             {
-                this.speed.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
-                this.speed.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
+                Vector2 newSpeed = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
+                if (H.Norme(newSpeed) >= C.MAXSPEED)
+                    speed = Vector2.Normalize(newSpeed) * C.MAXSPEED;
+                else
+                    speed = newSpeed;
             }
             oldState = newState;
         }

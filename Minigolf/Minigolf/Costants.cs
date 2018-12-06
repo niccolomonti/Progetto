@@ -28,6 +28,7 @@ namespace Minigolf
         public static Texture2D TEXTUREBALL;
         public static float BALLRADIUS = 5f;
         public static float FRICTION = 0.997f;
+        public static float MAXSPEED = 13f;
 
         public static int CUEATTENUATION = 50;
 

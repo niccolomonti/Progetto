@@ -98,6 +98,7 @@ namespace Minigolf
 
             spriteBatch.Begin();
             spriteBatch.DrawString(font, "Mouse: " + mousePosition.X + "x" + mousePosition.Y, new Vector2(0, 0), Color.White);
+            spriteBatch.DrawString(font, "Speed: " + H.Norme(ball.Speed), new Vector2(0, 15), Color.White);
 
             //controllo start program
             //----------

@@ -22,7 +22,7 @@ namespace Minigolf
 
         public void Draw(SpriteBatch sprite)
         {
-            sprite.Draw(C.TEXTURESTART, dimBoard, Color.White);
+           // sprite.Draw(C.TEXTURESTART, dimBoard, Color.White);
         }
     }
 }
