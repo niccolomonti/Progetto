@@ -13,8 +13,7 @@ namespace Minigolf
 {
     public class Ball : Sprite
     {        
-        protected float radius;
-        //protected Rectangle rectangle;
+        protected float radius;        
         protected bool cueOn = false;
         protected Vector2 mousePosition;
         protected MouseState oldState;        
@@ -88,6 +87,7 @@ namespace Minigolf
             velocity = velocity * C.FRICTION;
             if (H.Norme(velocity) < 0.1f)
                 velocity = Vector2.Zero;
+            
             return position + velocity;
         }
 
@@ -116,6 +116,7 @@ namespace Minigolf
 
         override public void Update(GameTime gameTime)
         {
+            position = NextPosition();
             switch (V.gameState)
             {
                 case GAMESTATE.START:

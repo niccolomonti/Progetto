@@ -31,6 +31,6 @@ namespace Minigolf
 
         public static int CUEATTENUATION = 50;
 
-        public static float GETBALLDISTANCE = 10f;
+        public static float GETBALLDISTANCE = 20f;
     }
 }

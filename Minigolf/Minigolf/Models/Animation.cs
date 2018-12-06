@@ -19,6 +19,8 @@ namespace Minigolf.Models
         public float FrameSpeed { get; set; }
         private bool IsLooping { get; set; }
 
+        public Vector2 Offset { get { return new Vector2(FrameWidth / 2, FrameHeight / 2); } } // il centro della texture
+
         public Animation(Texture2D texture, int frameCount)
         {
             Texture = texture;

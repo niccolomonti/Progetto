@@ -25,14 +25,14 @@ namespace Minigolf.Sprites
         public Rectangle rectangle;
         public bool selected;
 
-        public Vector2 Position
+        public Vector2 Position // posizione del centro della texture
         {
             get { return position; }
             set
             {
                 position = value;
                 if (animationManager != null)
-                    animationManager.Position = position;
+                    position = position + animationManager.animation.Offset;
             }
         }
 
@@ -50,9 +50,9 @@ namespace Minigolf.Sprites
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (texture != null)
-                spriteBatch.Draw(texture, Position, Color.White);
+                spriteBatch.Draw(texture, position, Color.White);
             else if (animationManager != null)
-                animationManager.Draw(spriteBatch);
+                animationManager.Draw(spriteBatch, Position);
             else throw new Exception("There is an error!");
         }
 
@@ -74,7 +74,7 @@ namespace Minigolf.Sprites
             
         }
 
-        public virtual void Update(GameTime gameTime/*, List<Sprite> sprites*/)
+        public virtual void Update(GameTime gameTime)
         {
             Move();
 
@@ -82,7 +82,7 @@ namespace Minigolf.Sprites
 
             animationManager.Update(gameTime);
 
-            Position += velocity;
+            position += velocity;
             velocity = Vector2.Zero;
         }        
     }

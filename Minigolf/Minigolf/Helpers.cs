@@ -69,10 +69,11 @@ namespace Minigolf
                     {
                         case '1':
                             V.listRectWall.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT));
-                            sprite.Draw(C.TEXTURESILVER, new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), C.TEXTURESILVER.Bounds, Color.White);
+                            //spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
+                            sprite.Draw(C.TEXTURESILVER, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTURESILVER.Bounds,color: Color.White, layerDepth: 1);
                             break;
                         case 'E':
-                            sprite.Draw(C.TEXTUREHOLE, new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), C.TEXTUREHOLE.Bounds, Color.White);
+                            sprite.Draw(C.TEXTUREHOLE, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREHOLE.Bounds, color: Color.White, layerDepth: 1);
                             break;
                     }
                 }

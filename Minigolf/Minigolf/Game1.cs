@@ -23,7 +23,7 @@ namespace Minigolf
         SpriteFont font;
 
         
-        /*private*/public List<Sprite> sprites;
+        private List<Sprite> sprites;
 
         public Game1()
         {
@@ -142,6 +142,8 @@ namespace Minigolf
                     V.gameState = GAMESTATE.HITBALL;
                     break;
                 case GAMESTATE.HITBALL:
+                    if (Vector2.Distance(sprites[0].Position, sprites[1].Position) > C.GETBALLDISTANCE)
+                        V.gameState = GAMESTATE.GOTOBALL;
                     if (sprites[1].selected)
                         V.gameState = GAMESTATE.PLAY;
                     break;
@@ -160,15 +162,12 @@ namespace Minigolf
                     else
                     {
                         if (sprites[1].velocity == Vector2.Zero && !sprites[1].selected)
-                        {
-                            //sprites[1].selected = false;
+                        {                            
                             V.gameState = GAMESTATE.GOTOBALL;
                         }
                     }
                     break;
                 case GAMESTATE.GOTOBALL:
-                    //if (Vector2.Distance(new Vector2((sprites[0].position.X + sprites[0].texture.Width)/2, (sprites[0].position.Y + sprites[0].texture.Height) / 2),
-                    //                     new Vector2((sprites[1].position.X + sprites[1].texture.Width) / 2, (sprites[1].position.Y + sprites[1].texture.Height) / 2)) < C.GETBALLDISTANCE)
                     if(Vector2.Distance(sprites[0].Position, sprites[1].Position) < C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.HITBALL;
                     break;
@@ -188,20 +187,20 @@ namespace Minigolf
         {
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             spriteBatch.DrawString(font, V.gameState.ToString(), new Vector2(0, 0), Color.White);
             spriteBatch.DrawString(font, Vector2.Distance(sprites[0].Position, sprites[1].Position).ToString(), new Vector2(0, 20), Color.White);
-
+            spriteBatch.DrawString(font, (sprites[0].Position).ToString(), new Vector2(0, 40), Color.White);
+            spriteBatch.DrawString(font, (sprites[1].Position).ToString(), new Vector2(0, 60), Color.White);
 
             //controllo start program
             //----------
-
             if (V.level <= C.MAXLEVEL)
             {
-                H.DrawMap(spriteBatch, V.level);                
+                H.DrawMap(spriteBatch, V.level);
 
                 foreach (var sprite in sprites)
-                    sprite.Draw(spriteBatch);
+                    sprite.Draw(spriteBatch);               
             }
             else
             {

@@ -12,9 +12,9 @@ namespace Minigolf.Managers
 {
     public class AnimationManager
     {
-        private Animation animation;
-        private float timer;
-        public Vector2 Position { get; set; }
+        public Animation animation;
+        private float timer;         
+
 
         public AnimationManager(Animation theAnimation)
         {
@@ -53,10 +53,9 @@ namespace Minigolf.Managers
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            spriteBatch.Draw(animation.Texture, Position, new Rectangle(animation.CurrentFrame * animation.FrameWidth, 0, animation.FrameWidth, animation.FrameHeight), Color.White);
-
+           spriteBatch.Draw(animation.Texture, position - animation.Offset, new Rectangle(animation.CurrentFrame * animation.FrameWidth, 0, animation.FrameWidth, animation.FrameHeight), Color.White);
         }
     }
 }

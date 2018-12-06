@@ -54,12 +54,7 @@ namespace Minigolf
         }
 
         override public void Update(GameTime gameTime)
-        {
-            Move();
-            SetAnimation();
-            animationManager.Update(gameTime);
-            Position += velocity;
-            velocity = Vector2.Zero;
+        {          
 
             switch (V.gameState)
             {
@@ -69,7 +64,18 @@ namespace Minigolf
                     SetAnimation();
                     animationManager.Update(gameTime);                    
                     break;
+                case GAMESTATE.PLAY:                    
+                    SetAnimation();
+                    animationManager.Update(gameTime);
+                    position += velocity;
+                    velocity = Vector2.Zero;
+                    break;
                 default:
+                    Move();
+                    SetAnimation();
+                    animationManager.Update(gameTime);
+                    position += velocity;
+                    velocity = Vector2.Zero;
                     break;
             }
 
