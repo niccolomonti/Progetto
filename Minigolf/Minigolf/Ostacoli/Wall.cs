@@ -7,10 +7,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Minigolf
+namespace Minigolf.Ostacoli
 {
-    public class BoardGolf
+    public class Wall : Oggetto
     {
-        
+        public Wall(Point position)
+        {
+            texture = C.TEXTUREWALL;
+            rectangle = C.RECTWALL;
+            rectangle.Location = position;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Minigolf.Ostacoli;
 
 namespace Minigolf
 {
@@ -12,10 +13,13 @@ namespace Minigolf
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Ball ball;
-        Point mousePosition;
-        SpriteFont font;
-        MouseState mouseState;
-        BoardGolf board;
+        SpriteFont spriteFont;
+
+        //Point mousePosition;
+        //
+        //MouseState mouseState;
+        //BoardGolf board;
+
 
         public Game1()
         {
@@ -47,19 +51,30 @@ namespace Minigolf
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = Content.Load<SpriteFont>("font");
-            board = new BoardGolf();
+            spriteFont = Content.Load<SpriteFont>("font");
 
-            H.ReadFile();
+            //board = new BoardGolf();
+
+            //H.ReadFile();
 
             C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
             C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
-            C.TEXTUREBALL = Content.Load<Texture2D>("0");
-            C.TEXTUREHOLE = Content.Load<Texture2D>("end");
-            C.TEXTURESAND = H.CreateTexture(GraphicsDevice, C.PIXELSXSAND.X, C.PIXELSXSAND.Y, Color.Beige);
+            //C.TEXTUREBALL = Content.Load<Texture2D>("Ball");
+            //C.TEXTUREHOLE = Content.Load<Texture2D>("Buca");
+            //C.TEXTURESAND = Content.Load<Texture2D>("Sand"); //H.CreateTexture(GraphicsDevice, C.PIXELSXSAND.X, C.PIXELSXSAND.Y, Color.Beige);
+            //C.TEXTURECLIMB = Content.Load<Texture2D>("Salita");
+
+            //ball = new Ball(C.TEXTUREBALL, spriteBatch);
+            C.TEXTUREWALL = Content.Load<Texture2D>("Wall2");
+            C.TEXTUREBALL = Content.Load<Texture2D>("Ball2");
+            C.TEXTURESAND = Content.Load<Texture2D>("Sand");
             C.TEXTURECLIMB = Content.Load<Texture2D>("freccia");
 
-            ball = new Ball(C.TEXTUREBALL, spriteBatch);
+            H.ReadFile();
+            H.CreateOstacoli(V.level);
+
+            ball = new Ball();
+            ball.Position = V.startPosition[0];
         }
 
         /// <summary>
@@ -82,8 +97,9 @@ namespace Minigolf
                 Exit();
 
             ball.Update();
-            mouseState = Mouse.GetState();
-            mousePosition = mouseState.Position;
+
+            //mouseState = Mouse.GetState();
+            //mousePosition = mouseState.Position;
 
             base.Update(gameTime);
         }
@@ -97,22 +113,30 @@ namespace Minigolf
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "Mouse: " + mousePosition.X + "x" + mousePosition.Y, new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(font, "Speed: " + H.Norme(ball.Speed), new Vector2(0, 15), Color.White);
 
-            //controllo start program
-            //----------
+            foreach (Oggetto ostacolo in V.ostacoli)
+                ostacolo.Draw(spriteBatch);
 
-            if (V.level <= C.MAXLEVEL)
-            {
-                H.DrawMap(spriteBatch, V.level);
-                ball.Draw();
-            }
-            else
-            {
-                //end program
-            }
-            board.Draw(spriteBatch);
+            ball.Draw(spriteBatch);
+
+
+            spriteBatch.DrawString(spriteFont, "Position " + ball.Position.ToString(), new Vector2(0, 0), Color.Black);
+            spriteBatch.DrawString(spriteFont, "Ball speed {" + ball.Speed.X+" "+ball.Speed.Y+"}", new Vector2(0, 15), Color.Black);
+            //spriteBatch.DrawString(font, "Speed: " + H.Norme(ball.Speed), new Vector2(0, 15), Color.White);
+
+            ////controllo start program
+            ////----------
+
+            //if (V.level <= C.MAXLEVEL)
+            //{
+            //    H.DrawMap(spriteBatch, V.level);
+            //    ball.Draw();
+            //}
+            //else
+            //{
+            //    //end program
+            //}
+            //board.Draw(spriteBatch);
 
             spriteBatch.End();
 
