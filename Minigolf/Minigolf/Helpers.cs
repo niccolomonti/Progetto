@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Minigolf.Sprites;
 
 namespace Minigolf
 {
     public static class H //Helpers
     {
+        #region Helpers Costruttivi
         public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Color color)
         {
             Texture2D texture = new Texture2D(device, width, height);
@@ -21,7 +23,36 @@ namespace Minigolf
 
             return texture;
         }
+        public static float Norme(Vector2 v)
+        {
+            return (float)Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2));
+        }
 
+        public static Point Invert(Point p)
+        {
+            return new Point(p.Y, p.X);
+        }
+
+        public static Vector2 Invert(Vector2 v)
+        {
+            return new Vector2(v.Y, v.X);
+        }
+
+        public static Rectangle RotateRectangle(Rectangle a)
+        {
+            return new Rectangle(a.X - (a.Height / 2 - a.Width / 2), a.Y + (a.Height / 2 - a.Width / 2), a.Height, a.Width);
+        }
+
+        public static bool Intersect(Point p, Rectangle rect)
+        {
+            Rectangle pRect = new Rectangle(p.X, p.Y, 1, 1);
+            if (pRect.Intersects(rect))
+                return true;
+            return false;
+        }
+        #endregion
+
+        #region ReadFile chiamato una sola volta
         public static void ReadFile()
         {
             // Ciclo for per ciascun file.txt (livello)
@@ -41,10 +72,10 @@ namespace Minigolf
 
                         switch(line[j])
                         {
-                            case 'S':
+                            case 'i':
                                 V.startPosition[k] = new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2);
                                 break;
-                            case 'E':
+                            case 'f':
                                 V.endPosition[k] = new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2);
                                 V.endPositionRect[k] = new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT);
                                 break;
@@ -56,10 +87,12 @@ namespace Minigolf
                 V.gridMaps.Add(map);
             }
         }
+        #endregion
 
-        public static void DrawMap(SpriteBatch sprite, int level)
+        #region Creazione muri e ostacoli chiamato ogni Update
+        public static void CreateOstacoli(int level)
         {
-            V.listRectWall.Clear();
+            V.listSpriteLevel.Clear();
 
             for (int i = 0; i < C.MAINGRID.Y - 1; i++)
             {
@@ -68,23 +101,30 @@ namespace Minigolf
                     switch (V.gridMaps[level][i, j])
                     {
                         case '1':
-                            V.listRectWall.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT));
-                            //spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
-                            sprite.Draw(C.TEXTURESILVER, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTURESILVER.Bounds,color: Color.White, layerDepth: 1);
+                            V.listSpriteLevel.Add(new Wall(C.TEXTUREWALL, new Vector2(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y)));
                             break;
-                        case 'E':
-                            sprite.Draw(C.TEXTUREHOLE, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREHOLE.Bounds, color: Color.White, layerDepth: 1);
+                        case 's':
+                            V.listSpriteLevel.Add(new Sand(C.TEXTURESAND, new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2)));
+                            break;
+                        case 'b':
+                            V.listSpriteLevel.Add(new Climb(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2), 0));
+                            break;
+                        case 'l':
+                            V.listSpriteLevel.Add(new Climb(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2), 1));
+                            break;
+                        case 't':
+                            V.listSpriteLevel.Add(new Climb(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2), 2));
+                            break;
+                        case 'r':
+                            V.listSpriteLevel.Add(new Climb(C.TEXTURECLIMB, new Vector2(j * C.PIXELSXPOINT.X + C.PIXELSXPOINT.X / 2, i * C.PIXELSXPOINT.Y + C.PIXELSXPOINT.Y / 2), 3));
                             break;
                     }
                 }
             }
         }
+        #endregion
 
-        public static float Norme(Vector2 v)
-        {
-            return (float)Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2));
-        }
-
+        #region DrawLine DrawArrow
         public static void DrawLine(SpriteBatch sprite, Texture2D texture, Vector2 start, Vector2 end)
         {
             Vector2 edge = end - start;
@@ -99,5 +139,35 @@ namespace Minigolf
                 SpriteEffects.None,
                 0);
         }
+
+        public static void DrawArrow()
+        {
+
+        }
+        #endregion
+
+        //public static void DrawMap(SpriteBatch sprite, int level)
+        //{
+        //    V.listRectWall.Clear();
+
+        //    for (int i = 0; i < C.MAINGRID.Y - 1; i++)
+        //    {
+        //        for (int j = 0; j < C.MAINGRID.X - 1; j++)
+        //        {
+        //            switch (V.gridMaps[level][i, j])
+        //            {
+        //                case '1':
+        //                    V.listRectWall.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT));
+        //                    //spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
+        //                    sprite.Draw(C.TEXTUREWALL, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREWALL.Bounds,color: Color.White, layerDepth: 1);
+        //                    break;
+        //                case 'E':
+        //                    sprite.Draw(C.TEXTUREHOLE, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREHOLE.Bounds, color: Color.White, layerDepth: 1);
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //}
+
     }
 }

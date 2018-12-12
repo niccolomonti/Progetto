@@ -21,21 +21,35 @@ namespace Minigolf
 
         public Ball(Texture2D theTexture): base(theTexture)
         {
-            radius = C.BALLRADIUS;
-            rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
-
-            selected = false;
+            this.radius = C.BALLRADIUS;
+            base.position = Vector2.Zero;
+            base.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+            base.velocity = Vector2.Zero;
+            base.selected = false;
         }
 
         public Ball(Dictionary<string, Animation> theAnimaitions) : base(theAnimaitions)
         {
-            radius = C.BALLRADIUS;
-            rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
-
-            selected = false;
+            this.radius = C.BALLRADIUS;
+            base.position = Vector2.Zero;
+            base.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
+            base.velocity = Vector2.Zero;
+            base.selected = false;
         }
 
-        public void FrameCollision()
+        public void WindowCollision()
+        {
+            if (position.X - radius < 0)
+                velocity.X = -velocity.X;
+            if (position.Y - radius < 0)
+                velocity.Y = -velocity.Y;
+            if (position.X + radius > C.MAINWINDOW.X)
+                velocity.X = -velocity.X;
+            if (position.Y + radius > C.MAINWINDOW.Y)
+                velocity.Y = -velocity.Y;
+        }
+
+        public void CheckCollision()
         {
             Rectangle nextPositionRect = this.rectangle;
             nextPositionRect.Location = new Point((int)(NextPosition().X - radius), (int)(NextPosition().Y - radius));
@@ -43,15 +57,32 @@ namespace Minigolf
             float distanza = float.MaxValue;
             Rectangle rectCollision = new Rectangle();
 
-            foreach (Rectangle wallRectangle in V.listRectWall)
+            foreach (var o in V.listSpriteLevel)
             {
-                if (wallRectangle.Intersects(nextPositionRect))
+                if (o is Wall)
                 {
-                    float d = Vector2.Distance(wallRectangle.Center.ToVector2(), rectangle.Center.ToVector2());
-                    if (d < distanza)
+                    if (o.rectangle.Intersects(nextPositionRect))
                     {
-                        distanza = d;
-                        rectCollision = wallRectangle;
+                        float d = Vector2.Distance(o.rectangle.Center.ToVector2(), rectangle.Center.ToVector2());
+                        if (d < distanza)
+                        {
+                            distanza = d;
+                            rectCollision = o.rectangle;
+                        }
+                    }
+                }
+                if (o is Sand)
+                {
+                    if (H.Intersect(position.ToPoint(), o.rectangle))
+                    {
+                        velocity *= C.SANDFRICTION;
+                    }
+                }
+                if (o is Climb)
+                {
+                    if (H.Intersect(position.ToPoint(), o.rectangle))
+                    {
+                        velocity += o.velocity;
                     }
                 }
             }
@@ -60,34 +91,21 @@ namespace Minigolf
                 int x = rectCollision.Center.X - rectangle.Center.X;
                 int y = rectCollision.Center.Y - rectangle.Center.Y;
                 if (Math.Abs(x) > Math.Abs(y))
-                {                    
+                {
                     velocity.X = -velocity.X;
                 }
                 else
-                {                   
+                {
                     velocity.Y = -velocity.Y;
                 }
             }
         }
 
-        public void WindowCollision()
-        {
-            if (position.X - radius < 0)                
-                velocity.X = -velocity.X;
-            if (position.Y - radius < 0)                
-                velocity.Y = -velocity.Y;
-            if (position.X + radius > C.MAINWINDOW.X)                
-                velocity.X = -velocity.X;
-            if (position.Y + radius > C.MAINWINDOW.Y)                
-                velocity.Y = -velocity.Y;
-        }
-
         public Vector2 NextPosition()
         {
-            velocity = velocity * C.FRICTION;
-            if (H.Norme(velocity) < 0.1f)
+            velocity *= C.FRICTION;
+            if (H.Norme(velocity) < C.MINSPEED)
                 velocity = Vector2.Zero;
-            
             return position + velocity;
         }
 
@@ -106,9 +124,11 @@ namespace Minigolf
                 cueOn = false;            
             if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
             {
-                velocity.X = (this.position.X + -(mousePosition.X)) / C.CUEATTENUATION;
-                velocity.Y = (this.position.Y - (mousePosition.Y)) / C.CUEATTENUATION;
-
+                Vector2 newVelocity = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
+                if (H.Norme(newVelocity) >= C.MAXSPEED)
+                    velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
+                else
+                    velocity = newVelocity;
                 selected = false;
             }
             oldState = newState;
@@ -116,7 +136,7 @@ namespace Minigolf
 
         override public void Update(GameTime gameTime)
         {
-            position = NextPosition();
+            //position = NextPosition();
             switch (V.gameState)
             {
                 case GAMESTATE.START:
@@ -129,7 +149,7 @@ namespace Minigolf
                 case GAMESTATE.GOTOBALL:                    
                     break;
                 case GAMESTATE.PLAY:
-                    FrameCollision();
+                    CheckCollision();
                     WindowCollision();
                     position = NextPosition();
                     rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
@@ -137,7 +157,7 @@ namespace Minigolf
                     if(velocity == Vector2.Zero)
                         ManageMouse();
                     break;
-                case GAMESTATE.END:
+                case GAMESTATE.ENDGAME:
                     break;
             }
             
@@ -151,9 +171,9 @@ namespace Minigolf
 
         override public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
+            spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 0.8f);
             if (cueOn)
-                H.DrawLine(spriteBatch, C.TEXTURELINE, mousePosition, position);
+                H.DrawLine(spriteBatch, C.TEXTUREARROW, mousePosition, position);
         }
     }
 }

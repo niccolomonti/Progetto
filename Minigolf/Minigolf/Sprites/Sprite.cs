@@ -16,8 +16,9 @@ namespace Minigolf.Sprites
         public Texture2D texture;
         public Input input;
         protected Vector2 position;
-        public float speed = 1f;
-        public Vector2 velocity;        
+        public float speed = 2f;
+        public Vector2 velocity;
+        protected Vector2 center;
 
         protected AnimationManager animationManager;
         protected Dictionary<string, Animation> animations;
@@ -34,6 +35,11 @@ namespace Minigolf.Sprites
                 if (animationManager != null)
                     position = position + animationManager.animation.Offset;
             }
+        }
+        public Vector2 Center
+        {
+            get { return center; }
+            set { center = value; }
         }
 
         public Sprite(Texture2D theTexture)
@@ -65,8 +71,7 @@ namespace Minigolf.Sprites
             if (Keyboard.GetState().IsKeyDown(input.Left))
                 velocity.X -= speed;
             if (Keyboard.GetState().IsKeyDown(input.Right))
-                velocity.X += speed;
-            
+                velocity.X += speed;   
         }
 
         protected virtual void SetAnimation()

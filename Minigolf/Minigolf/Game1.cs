@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Minigolf.Sprites;
 using Minigolf.Models;
-using Minigolf;
 
 namespace Minigolf
 {
@@ -19,11 +18,8 @@ namespace Minigolf
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
-        SpriteFont font;
-
-        
-        private List<Sprite> sprites;
+        SpriteFont spriteFont;
+        List<Sprite> sprites;
 
         public Game1()
         {
@@ -55,16 +51,26 @@ namespace Minigolf
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteFont = Content.Load<SpriteFont>("font");
 
-            font = Content.Load<SpriteFont>("font");
+            #region Load Texture
+            C.TEXTUREWALL = Content.Load<Texture2D>("Wall");
+            C.TEXTURESAND = Content.Load<Texture2D>("Sand");
+            C.TEXTURECLIMB = Content.Load<Texture2D>("Climb");
+            C.TEXTUREARROW = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
+            C.TEXTUREBALL = Content.Load<Texture2D>("Ball");
+            C.TEXTURESTART = Content.Load<Texture2D>("Start");
+            C.TEXTUREHOLE = Content.Load<Texture2D>("Hole");
+            C.TEXTUREINHOLE = Content.Load<Texture2D>("Hole");
+            C.TEXTUREPLAY[0] = Content.Load<Texture2D>("Button/Play");
+            C.TEXTUREPLAY[1] = Content.Load<Texture2D>("Button/PlayOver");
+            C.TEXTUREPLAY[2] = Content.Load<Texture2D>("Button/PlayPress");
+            C.TEXTURECONTINUE[0] = Content.Load<Texture2D>("Button/Continue");
+            C.TEXTURECONTINUE[1] = Content.Load<Texture2D>("Button/ContinueOver");
+            C.TEXTURECONTINUE[2] = Content.Load<Texture2D>("Button/ContinuePress");
+            #endregion
 
-            H.ReadFile();
-
-            C.TEXTURESILVER = H.CreateTexture(GraphicsDevice, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Silver);
-            C.TEXTURELINE = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
-            C.TEXTUREBALL = Content.Load<Texture2D>("0");
-            C.TEXTUREHOLE = Content.Load<Texture2D>("end");
-            
+            #region Load Animations
             var playerAnimations = new Dictionary<string, Animation>()
             {
                 { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp"), 5) },
@@ -82,7 +88,9 @@ namespace Minigolf
             //{
             //    { "MotionLess", new Animation(Content.Load<Texture2D>("0"), 1) }
             //};
+            #endregion
 
+            #region Load Sprites
             sprites = new List<Sprite>()
             {
                 new Player(playerAnimations)
@@ -112,6 +120,14 @@ namespace Minigolf
                     // ------------------------
                 }
             };
+            #endregion
+
+            #region Button play e continue
+            V.playButton = new Button(C.TEXTUREPLAY);
+            V.continueButton = new Button(C.TEXTURECONTINUE);
+            #endregion
+
+            H.ReadFile();
         }
 
         /// <summary>
@@ -138,8 +154,13 @@ namespace Minigolf
 
             switch (V.gameState)
             {
+                case GAMESTATE.STARTGAME:
+                    if (V.playButton.Update())
+                        V.gameState = GAMESTATE.START;
+                    break;
                 case GAMESTATE.START:
-                    V.gameState = GAMESTATE.HITBALL;
+                    H.CreateOstacoli(V.level);
+                    V.gameState = GAMESTATE.GOTOBALL;
                     break;
                 case GAMESTATE.HITBALL:
                     if (Vector2.Distance(sprites[0].Position, sprites[1].Position) > C.GETBALLDISTANCE)
@@ -148,33 +169,36 @@ namespace Minigolf
                         V.gameState = GAMESTATE.PLAY;
                     break;
                 case GAMESTATE.PLAY:
-                    if (sprites[1].rectangle.Intersects(V.endPositionRect[V.level]))
+                    if (H.Intersect(sprites[1].Position.ToPoint(), V.endPositionRect[V.level]))
                     {
-                        if (++V.level <= C.MAXLEVEL)
+                        float d = Vector2.Distance(sprites[1].Position, V.endPosition[V.level]);
+                        if (d > 0.05f)
                         {
-                            V.gameState = GAMESTATE.START;
+                            sprites[1].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[1].Position) * 0.1f;
                         }
                         else
                         {
-                            V.gameState = GAMESTATE.END;
+                            if (++V.level <= C.MAXLEVEL)
+                                V.gameState = GAMESTATE.START;
+                            else
+                                V.gameState = GAMESTATE.ENDGAME;
                         }
                     }
                     else
                     {
-                        if (sprites[1].velocity == Vector2.Zero && !sprites[1].selected)
-                        {                            
+                        if (sprites[1].velocity == Vector2.Zero && !sprites[1].selected)                        
                             V.gameState = GAMESTATE.GOTOBALL;
-                        }
                     }
                     break;
                 case GAMESTATE.GOTOBALL:
                     if(Vector2.Distance(sprites[0].Position, sprites[1].Position) < C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.HITBALL;
                     break;
-                case GAMESTATE.END:
+                case GAMESTATE.LEVELCOMPLETE:
                     break;
-            }            
-
+                case GAMESTATE.ENDGAME:
+                    break;
+            }
 
             base.Update(gameTime);
         }
@@ -188,23 +212,44 @@ namespace Minigolf
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-            spriteBatch.DrawString(font, V.gameState.ToString(), new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(font, Vector2.Distance(sprites[0].Position, sprites[1].Position).ToString(), new Vector2(0, 20), Color.White);
-            spriteBatch.DrawString(font, (sprites[0].Position).ToString(), new Vector2(0, 40), Color.White);
-            spriteBatch.DrawString(font, (sprites[1].Position).ToString(), new Vector2(0, 60), Color.White);
+            spriteBatch.DrawString(spriteFont, V.gameState.ToString(), new Vector2(0, 0), Color.White);
+            //spriteBatch.DrawString(spriteFont, Vector2.Distance(sprites[0].Position, sprites[1].Position).ToString(), new Vector2(0, 20), Color.White);
+            //spriteBatch.DrawString(spriteFont, (sprites[0].Position).ToString(), new Vector2(0, 40), Color.White);
+            //spriteBatch.DrawString(spriteFont, (sprites[1].Position).ToString(), new Vector2(0, 60), Color.White);
 
-            //controllo start program
-            //----------
-            if (V.level <= C.MAXLEVEL)
+            ////controllo start program
+            ////----------
+            //if (V.level <= C.MAXLEVEL)
+            //{
+            //    H.DrawMap(spriteBatch, V.level);
+
+            //    foreach (var sprite in sprites)
+            //        sprite.Draw(spriteBatch);               
+            //}
+            //else
+            //{
+            //    //end program
+            //}
+            if (V.gameState == GAMESTATE.STARTGAME)
             {
-                H.DrawMap(spriteBatch, V.level);
+                spriteBatch.Draw(C.TEXTURESTART, new Rectangle(0, 0, C.MAINWINDOW.X, C.MAINWINDOW.Y), Color.White);
+                V.playButton.Draw(spriteBatch);
+            }
+            else if (V.gameState == GAMESTATE.LEVELCOMPLETE)
+            {
 
-                foreach (var sprite in sprites)
-                    sprite.Draw(spriteBatch);               
+            }
+            else if (V.gameState == GAMESTATE.ENDGAME)
+            {
+
             }
             else
             {
-                //end program
+                spriteBatch.Draw(C.TEXTUREHOLE, V.endPositionRect[V.level], null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1);
+                foreach (var sprite in V.listSpriteLevel)
+                    sprite.Draw(spriteBatch);
+                foreach (var sprite in sprites)
+                    sprite.Draw(spriteBatch);
             }
 
 
