@@ -21,6 +21,7 @@ namespace Minigolf
             this.arrayTexture = arrayTexture;
             rectangle = new Rectangle(Point.Zero, C.DIMBUTTON);
             rectangle.Location = new Point(C.MAINWINDOW.X / 2 - rectangle.Width / 2, 4 * C.MAINWINDOW.Y / 5);
+            usingTexture = arrayTexture[0];
         }
 
         public bool Update()
@@ -41,6 +42,7 @@ namespace Minigolf
                 if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
                 {
                     usingTexture = arrayTexture[1];
+                    oldState = newState;
                     return true;
                 }
                 oldState = newState;

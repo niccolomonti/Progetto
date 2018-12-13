@@ -74,15 +74,15 @@ namespace Minigolf
                 if (o is Sand)
                 {
                     if (H.Intersect(position.ToPoint(), o.rectangle))
-                    {
                         velocity *= C.SANDFRICTION;
-                    }
                 }
                 if (o is Climb)
                 {
                     if (H.Intersect(position.ToPoint(), o.rectangle))
                     {
                         velocity += o.velocity;
+                        if (H.Norme(velocity) < C.MINSPEED)
+                            velocity += o.velocity;
                     }
                 }
             }
@@ -124,6 +124,7 @@ namespace Minigolf
                 cueOn = false;            
             if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
             {
+                V.countHit++;
                 Vector2 newVelocity = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
                 if (H.Norme(newVelocity) >= C.MAXSPEED)
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
@@ -171,7 +172,7 @@ namespace Minigolf
 
         override public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 0.8f);
+            spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 0.6f);
             if (cueOn)
                 H.DrawArrow(spriteBatch, C.TEXTUREARROW, mousePosition, position);
         }

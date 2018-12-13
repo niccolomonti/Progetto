@@ -15,20 +15,23 @@ namespace Minigolf
     public static class V //Variables
     { 
         public static Random random = new Random();
+        public static GAMESTATE gameState = GAMESTATE.STARTGAME;
 
-        public static int level = 0;
-
+        #region Mappe livelli
         public static List<char[,]> gridMaps = new List<char[,]>();
-        public static List<Rectangle> listRectWall = new List<Rectangle>();
-
         public static Vector2[] startPosition = new Vector2[C.MAXLEVEL + 1];
         public static Vector2[] endPosition = new Vector2[C.MAXLEVEL + 1];
         public static Rectangle[] endPositionRect = new Rectangle[C.MAXLEVEL + 1];
-
-        public static GAMESTATE gameState = GAMESTATE.STARTGAME;
-
         public static List<Sprite> listSpriteLevel = new List<Sprite>();
+        public static int level = 0;
+        public static List<Rectangle> listTrack = new List<Rectangle>();
+        #endregion
 
+        #region Button
         public static Button playButton, continueButton;
+        #endregion
+
+        public static int countHit = 0;
+        public static int[] hit = new int[C.MAXLEVEL + 1];
     }
 }

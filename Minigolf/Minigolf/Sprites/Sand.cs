@@ -20,9 +20,7 @@ namespace Minigolf.Sprites
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            #pragma warning disable CS0618 // Il tipo o il membro è obsoleto
-            spriteBatch.Draw(texture, destinationRectangle: rectangle, color: Color.White, layerDepth: 1);
-            #pragma warning restore CS0618 // Il tipo o il membro è obsoleto
+            spriteBatch.Draw(texture, rectangle, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
         }
     }
 }

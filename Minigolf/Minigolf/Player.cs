@@ -64,7 +64,8 @@ namespace Minigolf
                     SetAnimation();
                     animationManager.Update(gameTime);                    
                     break;
-                case GAMESTATE.PLAY:                    
+                case GAMESTATE.PLAY:
+                    Move();
                     SetAnimation();
                     animationManager.Update(gameTime);
                     position += velocity;

@@ -41,15 +41,7 @@ namespace Minigolf.Sprites
             if (orientation == 1 || orientation == 3)
                 origin = H.Invert(origin);
 
-            #pragma warning disable CS0618 // Il tipo o il membro è obsoleto
-            sprite.Draw(texture,
-                position: center,
-                color: Color.White,
-                origin: origin,
-                rotation: orientation * (float)Math.PI / 2,
-                layerDepth: 1
-                );
-            #pragma warning restore CS0618 // Il tipo o il membro è obsoleto
+            sprite.Draw(texture, center, null, Color.White, orientation * (float)Math.PI / 2, origin, 1, SpriteEffects.None, 0.8f);
         }
     }
 }

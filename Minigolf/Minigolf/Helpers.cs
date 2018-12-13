@@ -52,6 +52,19 @@ namespace Minigolf
         }
         #endregion
 
+        public static void Background(SpriteBatch sprite)
+        {
+            //int i = (int)Math.Pow(2, 4);
+            //for (int y = 0; y < C.MAINGRID.Y / i; y++)
+            //{
+            //    for (int x = 0; x < C.MAINGRID.X / i; x++) 
+            //    {
+            //        sprite.Draw(C.TEXTUREBACKGROUND, new Rectangle(x * i * C.PIXELSXPOINT.X, y * i * C.PIXELSXPOINT.Y, i * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y), C.TEXTUREBACKGROUND.Bounds , Color.White, 0, Vector2.Zero, SpriteEffects.None, 1);
+            //    }
+            //}
+            sprite.Draw(C.TEXTUREBACKGROUND, new Rectangle(Point.Zero, C.MAINWINDOW), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1);
+        }
+
         #region ReadFile chiamato una sola volta
         public static void ReadFile()
         {
@@ -93,11 +106,15 @@ namespace Minigolf
         public static void CreateOstacoli(int level)
         {
             V.listSpriteLevel.Clear();
+            V.listTrack.Clear();
 
             for (int i = 0; i < C.MAINGRID.Y - 1; i++)
             {
                 for (int j = 0; j < C.MAINGRID.X - 1; j++)
                 {
+                    if (V.gridMaps[level][i, j] != '0')
+                        V.listTrack.Add(new Rectangle(j * C.PIXELSXPOINT.X, i * C.PIXELSXPOINT.Y, C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y));
+
                     switch (V.gridMaps[level][i, j])
                     {
                         case '1':
@@ -124,7 +141,7 @@ namespace Minigolf
         }
         #endregion
 
-        #region DrawLine DrawArrow
+        #region DrawLine e DrawArrow
         public static void DrawLine(SpriteBatch sprite, Texture2D texture, Vector2 start, Vector2 end)
         {
             Vector2 edge = end - start;
