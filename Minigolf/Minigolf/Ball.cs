@@ -173,7 +173,7 @@ namespace Minigolf
         {
             spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 0.8f);
             if (cueOn)
-                H.DrawLine(spriteBatch, C.TEXTUREARROW, mousePosition, position);
+                H.DrawArrow(spriteBatch, C.TEXTUREARROW, mousePosition, position);
         }
     }
 }

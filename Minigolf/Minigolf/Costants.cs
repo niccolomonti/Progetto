@@ -32,7 +32,7 @@ namespace Minigolf
         #endregion
 
         #region Texture Hole e start-ball
-        public static Texture2D TEXTUREHOLE, TEXTUREINHOLE, TEXTUREINIT;
+        public static Texture2D TEXTUREHOLE, TEXTUREINIT;
         #endregion
 
         #region Dati Ball

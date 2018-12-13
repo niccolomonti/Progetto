@@ -140,34 +140,20 @@ namespace Minigolf
                 0);
         }
 
-        public static void DrawArrow()
+        public static void DrawArrow(SpriteBatch sprite, Texture2D texture, Vector2 start, Vector2 end)
         {
-
+            Vector2 edge = end - start;
+            float angle = (float)Math.Atan2(edge.X, edge.Y);
+            
+            sprite.Draw(texture,
+                new Rectangle((int)end.X - ((int)start.X - (int)end.X), (int)end.Y - ((int)start.Y - (int)end.Y), 75, (int)edge.Length()),
+                null,
+                Color.White,
+                -angle,
+                new Vector2(C.TEXTUREARROW.Bounds.Width / 2, C.TEXTUREARROW.Bounds.Height / 2),
+                SpriteEffects.None,
+                0);
         }
         #endregion
-
-        //public static void DrawMap(SpriteBatch sprite, int level)
-        //{
-        //    V.listRectWall.Clear();
-
-        //    for (int i = 0; i < C.MAINGRID.Y - 1; i++)
-        //    {
-        //        for (int j = 0; j < C.MAINGRID.X - 1; j++)
-        //        {
-        //            switch (V.gridMaps[level][i, j])
-        //            {
-        //                case '1':
-        //                    V.listRectWall.Add(new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT));
-        //                    //spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 1);
-        //                    sprite.Draw(C.TEXTUREWALL, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREWALL.Bounds,color: Color.White, layerDepth: 1);
-        //                    break;
-        //                case 'E':
-        //                    sprite.Draw(C.TEXTUREHOLE, destinationRectangle: new Rectangle(new Point(j, i) * C.PIXELSXPOINT, C.PIXELSXPOINT), sourceRectangle: C.TEXTUREHOLE.Bounds, color: Color.White, layerDepth: 1);
-        //                    break;
-        //            }
-        //        }
-        //    }
-        //}
-
     }
 }

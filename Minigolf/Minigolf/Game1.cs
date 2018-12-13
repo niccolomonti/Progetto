@@ -57,11 +57,10 @@ namespace Minigolf
             C.TEXTUREWALL = Content.Load<Texture2D>("Wall");
             C.TEXTURESAND = Content.Load<Texture2D>("Sand");
             C.TEXTURECLIMB = Content.Load<Texture2D>("Climb");
-            C.TEXTUREARROW = H.CreateTexture(GraphicsDevice, 1, 1, Color.Black);
+            C.TEXTUREARROW = Content.Load<Texture2D>("Arrow");
             C.TEXTUREBALL = Content.Load<Texture2D>("Ball");
             C.TEXTURESTART = Content.Load<Texture2D>("Start");
             C.TEXTUREHOLE = Content.Load<Texture2D>("Hole");
-            C.TEXTUREINHOLE = Content.Load<Texture2D>("Hole");
             C.TEXTUREPLAY[0] = Content.Load<Texture2D>("Button/Play");
             C.TEXTUREPLAY[1] = Content.Load<Texture2D>("Button/PlayOver");
             C.TEXTUREPLAY[2] = Content.Load<Texture2D>("Button/PlayPress");
