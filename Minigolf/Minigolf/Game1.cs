@@ -220,7 +220,7 @@ namespace Minigolf
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             //(spriteBatch.DrawString(spriteFont, V.gameState.ToString(), new Vector2(0, 0), Color.White);
 
-            //H.Background(spriteBatch);
+            H.Background(spriteBatch);
             
             if (V.gameState == GAMESTATE.STARTGAME)
             {
