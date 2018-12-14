@@ -24,14 +24,14 @@ namespace Minigolf
         #endregion
 
         #region Nome e numero files contenenti i layout
-        public static int MAXLEVEL = 1;
+        public static int MAXLEVEL = 2;
         public static string[] FILENAME =
         {
             @"..\..\..\..\Layout\Level0.txt",
             @"..\..\..\..\Layout\Level1.txt",
             @"..\..\..\..\Layout\Level2.txt"
         };
-        public static int[] PAR = { 2, 4 };
+        public static int[] PAR = { 2, 4, 10 };
         #endregion
 
         #region Texture di start game e Tabellone punteggi
@@ -60,7 +60,7 @@ namespace Minigolf
         public static Texture2D TEXTURECLIMB;
         public static Point DIMCLIMB = new Point(3, 5) * C.PIXELSXPOINT;
         public static Rectangle RECTCLIMB = new Rectangle(Point.Zero, DIMCLIMB);
-        public static float VELCLIMB = 0.1f;
+        public static float VELCLIMB = 0.05f;
         #endregion
 
         #region Dati Sand
