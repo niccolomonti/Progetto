@@ -33,5 +33,7 @@ namespace Minigolf
 
         public static int countHit = 0;
         public static int[] hit = new int[C.MAXLEVEL + 1];
+
+        public static bool flagForSound = false;
     }
 }

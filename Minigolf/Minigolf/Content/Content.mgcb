@@ -291,6 +291,42 @@
 /processorParam:TextureFormat=Compressed
 /build:scoreFont.spritefont
 
+#begin Sound/applause-5.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/applause-5.wav
+
+#begin Sound/Arcade_S-wwwbeat-8526_hifi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Arcade_S-wwwbeat-8526_hifi.wav
+
+#begin Sound/Boocrap-Tucker_J-7897_hifi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Boocrap-Tucker_J-7897_hifi.wav
+
+#begin Sound/Golf_sho-Public_d-191_hifi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Golf_sho-Public_d-191_hifi.wav
+
+#begin Sound/Hole_in_-Public_d-189_hifi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Hole_in_-Public_d-189_hifi.wav
+
+#begin Sound/Snooker_-public_d-274_hifi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Snooker_-public_d-274_hifi.wav
+
 #begin Start.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Minigolf.Sprites;
 using Minigolf.Models;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Minigolf
 {
@@ -124,6 +125,15 @@ namespace Minigolf
             };
             #endregion
 
+            #region
+            C.buttonSound = Content.Load<SoundEffect>(@"Sound/Arcade_S-wwwbeat-8526_hifi");
+            C.golfShot = Content.Load<SoundEffect>(@"Sound/Golf_sho-Public_d-191_hifi");
+            C.ballHitWall = Content.Load<SoundEffect>(@"Sound/Snooker_-public_d-274_hifi");
+            C.ballInHole = Content.Load<SoundEffect>(@"Sound/Hole_in_-Public_d-189_hifi");
+            C.applause = Content.Load<SoundEffect>(@"Sound/applause-5");
+            C.boo = Content.Load<SoundEffect>(@"Sound/Boocrap-Tucker_J-7897_hifi");
+            #endregion
+
             #region Button play e continue
             V.playButton = new Button(C.TEXTUREPLAY);
             V.continueButton = new Button(C.TEXTURECONTINUE);
@@ -157,8 +167,8 @@ namespace Minigolf
             switch (V.gameState)
             {
                 case GAMESTATE.STARTGAME:
-                    if (V.playButton.Update())
-                        V.gameState = GAMESTATE.START;
+                    if (V.playButton.Update())                       
+                        V.gameState = GAMESTATE.START;                    
                     break;
                 case GAMESTATE.START:
                     H.CreateOstacoli(V.level);
@@ -171,17 +181,27 @@ namespace Minigolf
                     if (sprites[1].selected)
                         V.gameState = GAMESTATE.PLAY;
                     break;
-                case GAMESTATE.PLAY:
+                case GAMESTATE.PLAY:                    
                     if (H.Intersect(sprites[1].Position.ToPoint(), V.endPositionRect[V.level]))
                     {
                         float d = Vector2.Distance(sprites[1].Position, V.endPosition[V.level]);
                         if (d > 0.05f)
                         {
                             sprites[1].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[1].Position) * 0.1f;
+                            if (!V.flagForSound)
+                            {
+                                C.ballInHole.Play();
+                                V.flagForSound = true;
+                            }
                         }
                         else
                         {
-                            V.hit[V.level] = V.countHit;
+                            V.flagForSound = false;
+                            if (V.countHit <= C.PAR[V.level])
+                                C.applause.Play();
+                            else
+                                C.boo.Play();
+                            V.hit[V.level] = V.countHit;                            
                             if (++V.level <= C.MAXLEVEL)
                                 V.gameState = GAMESTATE.LEVELCOMPLETE;
                             else

@@ -43,6 +43,7 @@ namespace Minigolf
                 {
                     usingTexture = arrayTexture[1];
                     oldState = newState;
+                    C.buttonSound.Play();
                     return true;
                 }
                 oldState = newState;

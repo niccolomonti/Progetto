@@ -68,6 +68,8 @@ namespace Minigolf
                         {
                             distanza = d;
                             rectCollision = o.rectangle;
+
+                            C.ballHitWall.Play();
                         }
                     }
                 }
@@ -75,6 +77,7 @@ namespace Minigolf
                 {
                     if (H.Intersect(position.ToPoint(), o.rectangle))
                         velocity *= C.SANDFRICTION;
+
                 }
                 if (o is Climb)
                 {
@@ -130,6 +133,8 @@ namespace Minigolf
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
                 else
                     velocity = newVelocity;
+
+                C.golfShot.Play();
                 selected = false;
             }
             oldState = newState;

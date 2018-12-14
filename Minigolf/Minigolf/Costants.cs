@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Minigolf
 {
@@ -75,10 +76,15 @@ namespace Minigolf
         public static Point DIMBUTTON = new Point(295, 97);
         #endregion
 
-        #region
+        #region altre costanti
+
         public static Texture2D TEXTUREARROW;
         public static int CUEATTENUATION = 50;
         public static float GETBALLDISTANCE = 30f;
+        #endregion
+
+        #region Suoni
+        public static SoundEffect buttonSound, golfShot, ballHitWall, ballInHole, applause, boo; 
         #endregion
     }
 }
