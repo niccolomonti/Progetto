@@ -71,7 +71,8 @@ namespace Minigolf.Sprites
             if (Keyboard.GetState().IsKeyDown(input.Left))
                 velocity.X -= speed;
             if (Keyboard.GetState().IsKeyDown(input.Right))
-                velocity.X += speed;   
+                velocity.X += speed;
+            
         }
 
         protected virtual void SetAnimation()

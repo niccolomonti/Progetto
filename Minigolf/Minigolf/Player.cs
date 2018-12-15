@@ -50,7 +50,13 @@ namespace Minigolf
             if (Keyboard.GetState().IsKeyDown(input.Left))            
                     velocity.X -= speed;
             if (Keyboard.GetState().IsKeyDown(input.Right))            
-                    velocity.X += speed;              
+                    velocity.X += speed;
+
+            
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X != 0)
+                velocity.X += speed * GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X;
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y != 0)
+                velocity.Y -= speed * GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y;
         }
 
         override public void Update(GameTime gameTime)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework;
 
 namespace Minigolf.Models
 {
@@ -8,7 +9,7 @@ namespace Minigolf.Models
         public Keys Down { get; set; }
         public Keys Left { get; set; }
         public Keys Right { get; set; }
-
+        
     }
               
 }

@@ -14,9 +14,12 @@ namespace Minigolf
     public class Ball : Sprite
     {        
         protected float radius;        
-        protected bool cueOn = false;
+        protected bool mouseCueOn = false;
+        protected bool gamePadCueOn = false;
         protected Vector2 mousePosition;
-        protected MouseState oldState;        
+        protected Vector2 gamePadPosition;
+        protected MouseState mouseOldState;
+        protected GamePadState gamePadOldState;
       
 
         public Ball(Texture2D theTexture): base(theTexture)
@@ -112,20 +115,21 @@ namespace Minigolf
             return position + velocity;
         }
 
-        public void ManageMouse()
+        public void ManageHitBall()
         {
+            #region Manage mouse
             MouseState newState = Mouse.GetState();
             mousePosition = new Vector2(newState.X, newState.Y);
-            if ((newState.LeftButton == ButtonState.Pressed) && (oldState.LeftButton == ButtonState.Released))
+            if ((newState.LeftButton == ButtonState.Pressed) && (mouseOldState.LeftButton == ButtonState.Released))
             {
-                cueOn = true;
+                mouseCueOn = true;
                 selected = true; 
             }
             if (newState.LeftButton == ButtonState.Pressed)
-                cueOn = true;
-            if (newState.LeftButton == ButtonState.Released)            
-                cueOn = false;            
-            if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
+                mouseCueOn = true;
+            if (newState.LeftButton == ButtonState.Released)
+                mouseCueOn = false;            
+            if ((newState.LeftButton == ButtonState.Released) && (mouseOldState.LeftButton == ButtonState.Pressed))
             {
                 V.countHit++;
                 Vector2 newVelocity = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
@@ -137,7 +141,36 @@ namespace Minigolf
                 C.golfShot.Play();
                 selected = false;
             }
-            oldState = newState;
+            mouseOldState = newState;
+            #endregion
+
+            #region Manage gamepad
+            GamePadState newGamepadState = GamePad.GetState(PlayerIndex.One);
+            gamePadPosition = new Vector2(newGamepadState.ThumbSticks.Right.X, newGamepadState.ThumbSticks.Right.Y);
+            if ((newGamepadState.ThumbSticks.Right.Y != 0) && (gamePadOldState.ThumbSticks.Right.Y == 0))
+            {
+                gamePadCueOn = true;
+                selected = true;
+            }
+            if (newGamepadState.ThumbSticks.Right.X != 0 || newGamepadState.ThumbSticks.Right.Y != 0)
+                gamePadCueOn = true;
+            if (newGamepadState.ThumbSticks.Right.X == 0 && newGamepadState.ThumbSticks.Right.Y == 0)
+                gamePadCueOn = false;
+            if (((newGamepadState.ThumbSticks.Right.X == 0) && (gamePadOldState.ThumbSticks.Right.X != 0))
+               || ((newGamepadState.ThumbSticks.Right.Y == 0) && (gamePadOldState.ThumbSticks.Right.Y != 0)))
+            {
+                V.countHit++;
+                Vector2 newVelocity = new Vector2(this.position.X - gamePadPosition.X, this.position.Y - gamePadPosition.Y) / C.CUEATTENUATION;
+                if (H.Norme(newVelocity) >= C.MAXSPEED)
+                    velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
+                else
+                    velocity = newVelocity;
+
+                C.golfShot.Play();
+                selected = false;
+            }
+            gamePadOldState = newGamepadState;
+            #endregion
         }
 
         override public void Update(GameTime gameTime)
@@ -150,7 +183,7 @@ namespace Minigolf
                     velocity = Vector2.Zero;                    
                     break;
                 case GAMESTATE.HITBALL:
-                    ManageMouse();
+                    ManageHitBall();
                     break;
                 case GAMESTATE.GOTOBALL:                    
                     break;
@@ -160,8 +193,8 @@ namespace Minigolf
                     position = NextPosition();
                     rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
 
-                    if(velocity == Vector2.Zero)
-                        ManageMouse();
+                    if (velocity == Vector2.Zero)
+                        ManageHitBall();
                     break;
                 case GAMESTATE.ENDGAME:
                     break;
@@ -178,8 +211,11 @@ namespace Minigolf
         override public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, null, Color.White, 0, new Vector2(C.TEXTUREBALL.Width / 2, C.TEXTUREBALL.Height / 2), (2 * radius / C.TEXTUREBALL.Width), SpriteEffects.None, 0.6f);
-            if (cueOn)
+            if (mouseCueOn)
                 H.DrawArrow(spriteBatch, C.TEXTUREARROW, mousePosition, position);
+            else
+                if(gamePadCueOn)
+                    H.DrawArrow(spriteBatch, C.TEXTUREARROW, gamePadPosition, position);
         }
     }
 }
