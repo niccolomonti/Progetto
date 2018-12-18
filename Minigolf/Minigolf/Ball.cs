@@ -89,7 +89,7 @@ namespace Minigolf
                     if (H.Intersect(position.ToPoint(), o.rectangle))
                     {
                         velocity += o.velocity;
-                        if (H.Norme(velocity) < C.MINSPEED)
+                        if (H.Norme(velocity) <= C.MINSPEED)
                             velocity += o.velocity;
                     }
                 }
@@ -157,7 +157,7 @@ namespace Minigolf
             if (newGamepadState.ThumbSticks.Right == Vector2.Zero && oldGamepadState.ThumbSticks.Right != Vector2.Zero)
             { 
                 V.countHit++;
-                Vector2 newVelocity = new Vector2(-1*13* oldGamepadState.ThumbSticks.Right.X, 13* oldGamepadState.ThumbSticks.Right.Y) ;
+                Vector2 newVelocity = new Vector2(-C.MAXSPEED* oldGamepadState.ThumbSticks.Right.X, C.MAXSPEED* oldGamepadState.ThumbSticks.Right.Y) ;
                 if (H.Norme(newVelocity) >= C.MAXSPEED)
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
                 else

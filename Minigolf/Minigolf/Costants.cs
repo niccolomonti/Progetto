@@ -60,7 +60,7 @@ namespace Minigolf
         public static Texture2D TEXTURECLIMB;
         public static Point DIMCLIMB = new Point(3, 5) * C.PIXELSXPOINT;
         public static Rectangle RECTCLIMB = new Rectangle(Point.Zero, DIMCLIMB);
-        public static float VELCLIMB = 0.05f;
+        public static float VELCLIMB = 0.1f;
         #endregion
 
         #region Dati Sand
