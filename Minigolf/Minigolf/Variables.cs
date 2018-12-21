@@ -16,6 +16,7 @@ namespace Minigolf
     { 
         public static Random random = new Random();
         public static GAMESTATE gameState = GAMESTATE.STARTGAME;
+        public static ProgressBar bar;
 
         #region Mappe livelli
         public static List<char[,]> gridMaps = new List<char[,]>();

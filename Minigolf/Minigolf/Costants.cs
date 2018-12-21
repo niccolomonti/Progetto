@@ -84,7 +84,15 @@ namespace Minigolf
         #endregion
 
         #region Suoni
-        public static SoundEffect buttonSound, golfShot, ballHitWall, ballInHole, applause, boo; 
+        public static SoundEffect buttonSound, golfShot, ballHitWall, ballInHole, applause, boo;
         #endregion
+
+        #region Progress Bar
+        public static Texture2D TEXTUREBACKBAR;
+        public static Texture2D TEXTUREBAR;
+        public static Point DIMBAR = new Point(200, 20);
+        public static int BORDERBAR = 1;
+        public static Vector2 POSBAR = new Vector2(MAINWINDOW.X / 2 - DIMBAR.X / 2, MAINWINDOW.Y - DIMBAR.Y);
+        #endregion 
     }
 }

@@ -23,6 +23,27 @@ namespace Minigolf
 
             return texture;
         }
+        public static Texture2D CreateBorderTexture(GraphicsDevice device, int width, int height, int borderWidht, Color color)
+        {
+            Texture2D texture = new Texture2D(device, width, height);
+            Color[] data = new Color[width * height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int i = 0; i <= borderWidht; i++)
+                    {
+                        if (x == i || y == i || x == width - 1 - i || y == height - 1 - i)
+                        {
+                            data[x + y * width] = color;
+                            break;
+                        }
+                    }
+                }
+            }
+            texture.SetData(data);
+            return texture;
+        }
         public static float Norme(Vector2 v)
         {
             return (float)Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2));
@@ -48,6 +69,16 @@ namespace Minigolf
             Rectangle pRect = new Rectangle(p.X, p.Y, 1, 1);
             if (pRect.Intersects(rect))
                 return true;
+            return false;
+        }
+        public static bool Timeout(GameTime gameTime, ref float timer, float maxTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (timer > maxTime)
+            {
+                timer = 0;
+                return true;
+            }
             return false;
         }
         #endregion

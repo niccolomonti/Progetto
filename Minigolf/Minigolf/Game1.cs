@@ -21,7 +21,7 @@ namespace Minigolf
         SpriteBatch spriteBatch;
         SpriteFont spriteFont;
         List<Sprite> sprites;
-
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -71,6 +71,8 @@ namespace Minigolf
             C.TEXTURECONTINUE[0] = Content.Load<Texture2D>("Button/Continue");
             C.TEXTURECONTINUE[1] = Content.Load<Texture2D>("Button/ContinueOver");
             C.TEXTURECONTINUE[2] = Content.Load<Texture2D>("Button/ContinuePress");
+            C.TEXTUREBACKBAR = H.CreateBorderTexture(GraphicsDevice, C.DIMBAR.X, C.DIMBAR.Y, C.BORDERBAR, Color.Black);
+            C.TEXTUREBAR = H.CreateTexture(GraphicsDevice, 1, 1, Color.Green);
             #endregion
 
             #region Load Animations
@@ -140,6 +142,8 @@ namespace Minigolf
             #endregion
 
             H.ReadFile();
+
+            V.bar = new ProgressBar(C.TEXTUREBACKBAR, C.TEXTUREBAR, C.POSBAR);
         }
 
         /// <summary>
@@ -163,7 +167,7 @@ namespace Minigolf
 
             foreach (var sprite in sprites)
                 sprite.Update(gameTime);
-
+            
             switch (V.gameState)
             {
                 case GAMESTATE.STARTGAME:
@@ -283,7 +287,7 @@ namespace Minigolf
                     sprite.Draw(spriteBatch);
             }
 
-
+           
             spriteBatch.End();
 
             base.Draw(gameTime);
