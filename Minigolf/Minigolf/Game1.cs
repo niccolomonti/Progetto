@@ -137,8 +137,8 @@ namespace Minigolf
             #endregion
 
             #region Button play e continue
-            V.playButton = new Button(C.TEXTUREPLAY);
-            V.continueButton = new Button(C.TEXTURECONTINUE);
+            V.playButton = new Button(C.TEXTUREPLAY, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
+            V.continueButton = new Button(C.TEXTURECONTINUE, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             #endregion
 
             H.ReadFile();

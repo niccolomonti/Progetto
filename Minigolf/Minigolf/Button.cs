@@ -14,13 +14,14 @@ namespace Minigolf
         protected Texture2D[] arrayTexture;
         protected Texture2D usingTexture;
         protected Rectangle rectangle;
-        protected MouseState oldState;
+        protected MouseState oldMouseState;
+        protected GamePadState oldGamePadState;
 
-        public Button(Texture2D[] arrayTexture)
+        public Button(Texture2D[] arrayTexture, int LocationX, int LocationY)
         {
             this.arrayTexture = arrayTexture;
-            rectangle = new Rectangle(Point.Zero, C.DIMBUTTON);
-            rectangle.Location = new Point(C.MAINWINDOW.X / 2 - rectangle.Width / 2, 4 * C.MAINWINDOW.Y / 5);
+            rectangle = new Rectangle(Point.Zero, C.DIMBUTTON);            
+            rectangle.Location = new Point(LocationX - rectangle.Width / 2, LocationY);
             usingTexture = arrayTexture[0];
         }
 
@@ -28,26 +29,43 @@ namespace Minigolf
         {
             usingTexture = arrayTexture[0];
 
-            MouseState newState = Mouse.GetState();
-            Rectangle posMouse = new Rectangle(newState.X, newState.Y, 1, 1);
+            MouseState newMouseState = Mouse.GetState();
+            Rectangle posMouse = new Rectangle(newMouseState.X, newMouseState.Y, 1, 1);
+
+            GamePadState newGamePadState = GamePad.GetState(PlayerIndex.One);
 
             if (posMouse.Intersects(rectangle))
             {
-                if ((newState.LeftButton == ButtonState.Pressed) && (oldState.LeftButton == ButtonState.Released))
+                if ((newMouseState.LeftButton == ButtonState.Pressed) && (oldMouseState.LeftButton == ButtonState.Released))
                     usingTexture = arrayTexture[2];
-                if (newState.LeftButton == ButtonState.Pressed)
+                if (newMouseState.LeftButton == ButtonState.Pressed)
                     usingTexture = arrayTexture[2];
-                if (newState.LeftButton == ButtonState.Released)
+                if (newMouseState.LeftButton == ButtonState.Released)
                     usingTexture = arrayTexture[1];
-                if ((newState.LeftButton == ButtonState.Released) && (oldState.LeftButton == ButtonState.Pressed))
+                if ((newMouseState.LeftButton == ButtonState.Released) && (oldMouseState.LeftButton == ButtonState.Pressed))
                 {
                     usingTexture = arrayTexture[1];
-                    oldState = newState;
+                    oldMouseState = newMouseState;
                     C.buttonSound.Play();
                     return true;
                 }
-                oldState = newState;
+                oldMouseState = newMouseState;
             }
+            else
+            {
+                if (newGamePadState.IsButtonDown(Buttons.A))                
+                    usingTexture = arrayTexture[2];                
+                if(newGamePadState.IsButtonUp(Buttons.A) && oldGamePadState.IsButtonDown(Buttons.A))
+                {
+                    usingTexture = arrayTexture[1];
+                    oldGamePadState = newGamePadState;
+                    C.buttonSound.Play();
+                    return true;
+                }
+
+                oldGamePadState = newGamePadState;
+            }
+
             return false;
         }
 
