@@ -21,9 +21,9 @@ namespace Minigolf
         protected MouseState newMouseState;
         protected MouseState oldMouseState;
         protected GamePadState newGamepadState;
-        protected List<GamePadState> oldGamepadStates = new List<GamePadState>();
+        protected GamePadState oldGamepadState;
         
-        protected bool gamepadAntiBounce = false;
+        protected const float gamepadAntiBounce = 0.2f;
        
 
         public Ball(Texture2D theTexture): base(theTexture)
@@ -33,8 +33,6 @@ namespace Minigolf
             base.rectangle = new Rectangle((int)(position.X - radius), (int)(position.Y - radius), (int)(2 * radius), (int)(2 * radius));
             base.velocity = Vector2.Zero;
             base.selected = false;
-
-            oldGamepadStates.Add(new GamePadState()); // da togliere !!!!!!!
         }
 
         public Ball(Dictionary<string, Animation> theAnimaitions) : base(theAnimaitions)
@@ -152,20 +150,22 @@ namespace Minigolf
             newGamepadState = GamePad.GetState(PlayerIndex.One);
             gamepadPosition = new Vector2(this.position.X + 250*newGamepadState.ThumbSticks.Right.X, this.position.Y - 250*newGamepadState.ThumbSticks.Right.Y);
             
-            if ((newGamepadState.ThumbSticks.Right != Vector2.Zero) && oldGamepadStates[0].ThumbSticks.Right == Vector2.Zero)
+            //if (newGamepadState.ThumbSticks.Right != Vector2.Zero && oldGamepadState.ThumbSticks.Right == Vector2.Zero                )
+            if (H.Norme(newGamepadState.ThumbSticks.Right) >= gamepadAntiBounce && H.Norme(oldGamepadState.ThumbSticks.Right) <= gamepadAntiBounce 
+                /*&& H.Norme(newGamepadState.ThumbSticks.Right) > H.Norme(oldGamepadState.ThumbSticks.Right)*/)
             {
                 gamePadCueOn = true;
                 selected = true;
-
-                //oldGamepadStates.Add(newGamepadState);
             }            
-            if (newGamepadState.ThumbSticks.Right == Vector2.Zero)
+            //if (newGamepadState.ThumbSticks.Right == Vector2.Zero)
+            if(H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounce)
                 gamePadCueOn = false;
-            //if (newGamepadState.ThumbSticks.Right == Vector2.Zero && oldGamepadState.ThumbSticks.Right != Vector2.Zero)
-            if (newGamepadState.ThumbSticks.Right == Vector2.Zero && gamepadAntiBounce)
+            //if (newGamepadState.ThumbSticks.Right == Vector2.Zero && oldGamepadState.ThumbSticks.Right != Vector2.Zero
+            //    && H.Norme(oldGamepadState.ThumbSticks.Right) >= gamepadAntiBounce)    
+            if (H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounce && H.Norme(oldGamepadState.ThumbSticks.Right) > gamepadAntiBounce)    
             {
                 V.countHit++;
-                Vector2 newVelocity = new Vector2(-C.MAXSPEED* oldGamepadStates[0].ThumbSticks.Right.X, C.MAXSPEED* oldGamepadStates[0].ThumbSticks.Right.Y) ;
+                Vector2 newVelocity = new Vector2(-C.MAXSPEED* oldGamepadState.ThumbSticks.Right.X, C.MAXSPEED* oldGamepadState.ThumbSticks.Right.Y) ;
                 if (H.Norme(newVelocity) >= C.MAXSPEED)
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
                 else
@@ -175,11 +175,7 @@ namespace Minigolf
                 selected = false;
             }
 
-            oldGamepadStates[0] = newGamepadState;
-            if (oldGamepadStates[0].ThumbSticks.Right != Vector2.Zero)
-                gamepadAntiBounce = true;
-            else
-                gamepadAntiBounce = false;
+            oldGamepadState = newGamepadState;            
             
             #endregion
         }
