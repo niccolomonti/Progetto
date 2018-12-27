@@ -51,20 +51,18 @@ namespace Minigolf
                 }
                 oldMouseState = newMouseState;
             }
-            else
+            
+            if (newGamePadState.IsButtonDown(Buttons.A))                
+                usingTexture = arrayTexture[2];                
+            if(newGamePadState.IsButtonUp(Buttons.A) && oldGamePadState.IsButtonDown(Buttons.A))
             {
-                if (newGamePadState.IsButtonDown(Buttons.A))                
-                    usingTexture = arrayTexture[2];                
-                if(newGamePadState.IsButtonUp(Buttons.A) && oldGamePadState.IsButtonDown(Buttons.A))
-                {
-                    usingTexture = arrayTexture[1];
-                    oldGamePadState = newGamePadState;
-                    C.buttonSound.Play();
-                    return true;
-                }
-
+                usingTexture = arrayTexture[1];
                 oldGamePadState = newGamePadState;
+                C.buttonSound.Play();
+                return true;
             }
+            oldGamePadState = newGamePadState;
+            
 
             return false;
         }
