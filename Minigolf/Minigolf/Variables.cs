@@ -29,7 +29,7 @@ namespace Minigolf
         #endregion
 
         #region Button
-        public static Button playButton, continueButton;
+        public static Button playButton, continueButton, restartButton;
         #endregion
 
         public static int countHit = 0;

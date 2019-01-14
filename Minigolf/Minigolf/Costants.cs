@@ -70,9 +70,10 @@ namespace Minigolf
         public static float SANDFRICTION = 0.9f;
         #endregion
 
-        #region Dati Button Play e Continue
+        #region Dati Button Play, Continue e Restart
         public static Texture2D[] TEXTUREPLAY = new Texture2D[3];
         public static Texture2D[] TEXTURECONTINUE = new Texture2D[3];
+        public static Texture2D[] TEXTURERESTART = new Texture2D[3];
         public static Point DIMBUTTON = new Point(295, 97);
         #endregion
 

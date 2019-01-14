@@ -71,6 +71,9 @@ namespace Minigolf
             C.TEXTURECONTINUE[0] = Content.Load<Texture2D>("Button/Continue");
             C.TEXTURECONTINUE[1] = Content.Load<Texture2D>("Button/ContinueOver");
             C.TEXTURECONTINUE[2] = Content.Load<Texture2D>("Button/ContinuePress");
+            C.TEXTURERESTART[0] = Content.Load<Texture2D>("Button/Restart");
+            C.TEXTURERESTART[1] = Content.Load<Texture2D>("Button/RestartOver");
+            C.TEXTURERESTART[2] = Content.Load<Texture2D>("Button/RestartPress");
             C.TEXTUREBACKBAR = H.CreateBorderTexture(GraphicsDevice, C.DIMBAR.X, C.DIMBAR.Y, C.BORDERBAR, Color.Black);
             C.TEXTUREBAR = H.CreateTexture(GraphicsDevice, 1, 1, Color.Green);
             #endregion
@@ -139,6 +142,7 @@ namespace Minigolf
             #region Button play e continue
             V.playButton = new Button(C.TEXTUREPLAY, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             V.continueButton = new Button(C.TEXTURECONTINUE, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
+            V.restartButton = new Button(C.TEXTURERESTART, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             #endregion
 
             H.ReadFile();
