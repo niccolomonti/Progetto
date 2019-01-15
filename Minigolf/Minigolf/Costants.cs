@@ -76,7 +76,7 @@ namespace Minigolf
 
         #region Dati Button Play e Continue
         public static Texture2D[] TEXTUREPLAY = new Texture2D[3];
-        public static Texture2D[] TEXTURECONTINUE = new Texture2D[3];
+        public static Texture2D[] TEXTURECONTINUE = new Texture2D[3];        
         public static Point DIMBUTTON = new Point(295, 97);
         #endregion
 
