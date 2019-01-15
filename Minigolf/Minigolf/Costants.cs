@@ -42,10 +42,6 @@ namespace Minigolf
         public static Texture2D TEXTUREHOLE, TEXTURESTART;
         #endregion
 
-        #region Texture personaggi e barre di selezione
-        public static Texture2D TEXTUREPLAYER1, TEXTUREPLAYER2, TEXTURERECTSELECTION, TEXTURERECTNONSELECTION;
-        #endregion
-
         #region Dati Ball
         public static Texture2D TEXTUREBALL;
         public static float BALLRADIUS = 7.5f;

@@ -23,10 +23,8 @@ namespace Minigolf
         protected GamePadState newGamepadState;
         protected GamePadState oldGamepadState;
         
-        protected const float gamepadAntiBounceLimit = 0.2f;
-        // protected char gamepadAntiBounce = 'a';
-
-
+        protected const float gamepadAntiBounce = 0.2f;
+       
 
         public Ball(Texture2D theTexture): base(theTexture)
         {
@@ -152,15 +150,19 @@ namespace Minigolf
             newGamepadState = GamePad.GetState(PlayerIndex.One);
             gamepadPosition = new Vector2(this.position.X + 250*newGamepadState.ThumbSticks.Right.X, this.position.Y - 250*newGamepadState.ThumbSticks.Right.Y);
             
-            if (H.Norme(newGamepadState.ThumbSticks.Right) >= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
+            //if (newGamepadState.ThumbSticks.Right != Vector2.Zero && oldGamepadState.ThumbSticks.Right == Vector2.Zero                )
+            if (H.Norme(newGamepadState.ThumbSticks.Right) >= gamepadAntiBounce && H.Norme(oldGamepadState.ThumbSticks.Right) <= gamepadAntiBounce 
+                /*&& H.Norme(newGamepadState.ThumbSticks.Right) > H.Norme(oldGamepadState.ThumbSticks.Right)*/)
             {
                 gamePadCueOn = true;
                 selected = true;
             }            
-            if(H.Norme(newGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
+            //if (newGamepadState.ThumbSticks.Right == Vector2.Zero)
+            if(H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounce)
                 gamePadCueOn = false;
-            
-            if (H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) > gamepadAntiBounceLimit)    
+            //if (newGamepadState.ThumbSticks.Right == Vector2.Zero && oldGamepadState.ThumbSticks.Right != Vector2.Zero
+            //    && H.Norme(oldGamepadState.ThumbSticks.Right) >= gamepadAntiBounce)    
+            if (H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounce && H.Norme(oldGamepadState.ThumbSticks.Right) > gamepadAntiBounce)    
             {
                 V.countHit++;
                 Vector2 newVelocity = new Vector2(-C.MAXSPEED* oldGamepadState.ThumbSticks.Right.X, C.MAXSPEED* oldGamepadState.ThumbSticks.Right.Y) ;
