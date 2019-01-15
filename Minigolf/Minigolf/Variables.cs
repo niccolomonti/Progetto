@@ -36,5 +36,7 @@ namespace Minigolf
         public static int[] hit = new int[C.MAXLEVEL + 1];
 
         public static bool flagForSound = false;
+
+        public static int selectedPlayer = 0; // 0 for Wario e -1 for Waluigi
     }
 }
