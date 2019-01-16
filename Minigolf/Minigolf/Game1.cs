@@ -76,21 +76,37 @@ namespace Minigolf
             C.TEXTURERESTART[2] = Content.Load<Texture2D>("Button/RestartPress");
             C.TEXTUREBACKBAR = H.CreateBorderTexture(GraphicsDevice, C.DIMBAR.X, C.DIMBAR.Y, C.BORDERBAR, Color.Black);
             C.TEXTUREBAR = H.CreateTexture(GraphicsDevice, 1, 1, Color.Green);
+            C.TEXTUREPLAYER1 = Content.Load<Texture2D>("player_Wario");
+            C.TEXTUREPLAYER2 = Content.Load<Texture2D>("player_Waluigi");
+            C.TEXTURERECTSELECTION = Content.Load<Texture2D>("rectangleSelection");
+            C.TEXTURERECTNONSELECTION = Content.Load<Texture2D>("rectangleNonSelection");
             #endregion
 
             #region Load Animations
-            var playerAnimations = new Dictionary<string, Animation>()
+
+            var playerAnimations_Waluigi = new Dictionary<string, Animation>()
             {
-                { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp"), 5) },
-                { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown"), 5) },
-                { "WalkLeft", new Animation(Content.Load<Texture2D>("Player/WalkingLeft"), 5) },
-                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight"), 5) },
-                { "WalkDiagLeftDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftDown"), 5) },
-                { "WalkDiagRightDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightDown"), 5) },
-                { "WalkDiagLeftUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftUp"), 5) },
-                { "WalkDiagRightUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightUp"), 5) }
+                { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp_Waluigi"), 5) },
+                { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown_Waluigi"), 5) },
+                { "WalkLeft", new Animation(Content.Load<Texture2D>("Player/WalkingLeft_Waluigi"), 5) },
+                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight_Waluigi"), 5) },
+                { "WalkDiagLeftDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftDown_Waluigi"), 5) },
+                { "WalkDiagRightDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightDown_Waluigi"), 5) },
+                { "WalkDiagLeftUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftUp_Waluigi"), 5) },
+                { "WalkDiagRightUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightUp_Waluigi"), 5) }
             };
 
+            var playerAnimations_Wario = new Dictionary<string, Animation>()
+            {
+                { "WalkUp", new Animation(Content.Load<Texture2D>("Player/WalkingUp_Wario"), 6) },
+                { "WalkDown", new Animation(Content.Load<Texture2D>("Player/WalkingDown_Wario"), 6) },
+                { "WalkLeft", new Animation(Content.Load<Texture2D>("Player/WalkingLeft_Wario"), 6) },
+                { "WalkRight", new Animation(Content.Load<Texture2D>("Player/WalkingRight_Wario"), 6) },
+                { "WalkDiagLeftDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftDown_Wario"), 6) },
+                { "WalkDiagRightDown", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightDown_Wario"), 6) },
+                { "WalkDiagLeftUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalLeftUp_Wario"), 6) },
+                { "WalkDiagRightUp", new Animation(Content.Load<Texture2D>("Player/WalkingDiagonalRightUp_Wario"), 6) }
+            };
             // sarà da aggiungere ( e modificare, ovviamente) quando inseriremo l'animazione per la pallina
             //var ballAnimations = new Dictionary<string, Animation>()
             //{
@@ -98,10 +114,27 @@ namespace Minigolf
             //};
             #endregion
 
+
             #region Load Sprites
+            List<Dictionary<string, Animation>> playerAnimations = new List<Dictionary<string, Animation>>();
+            playerAnimations.Add(playerAnimations_Wario);
+            playerAnimations.Add(playerAnimations_Waluigi);
+
             sprites = new List<Sprite>()
             {
-                new Player(playerAnimations)
+                new Player(playerAnimations[0])
+                {
+                    Position = V.startPosition[V.level],
+                    input = new Input()
+                    {
+                        Up = Keys.Up,
+                        Down = Keys.Down,
+                        Left = Keys.Left,
+                        Right = Keys.Right
+                    }
+                },
+
+                new Player(playerAnimations[1])
                 {
                     Position = V.startPosition[V.level],
                     input = new Input()
@@ -130,7 +163,7 @@ namespace Minigolf
             };
             #endregion
 
-            #region
+            #region Load Sounds
             C.buttonSound = Content.Load<SoundEffect>(@"Sound/Arcade_S-wwwbeat-8526_hifi");
             C.golfShot = Content.Load<SoundEffect>(@"Sound/Golf_sho-Public_d-191_hifi");
             C.ballHitWall = Content.Load<SoundEffect>(@"Sound/Snooker_-public_d-274_hifi");
@@ -175,8 +208,18 @@ namespace Minigolf
             switch (V.gameState)
             {
                 case GAMESTATE.STARTGAME:
-                    if (V.playButton.Update())                       
-                        V.gameState = GAMESTATE.START;                    
+                    if (V.playButton.Update())
+                    {
+                        V.gameState = GAMESTATE.START;
+                        sprites.RemoveAt(V.selectedPlayer + 1);
+                    }
+                    else
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X > 0.4f)
+                            V.selectedPlayer = -1;
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X < -0.4f)
+                            V.selectedPlayer = 0;
+                    }
                     break;
                 case GAMESTATE.START:
                     H.CreateOstacoli(V.level);
@@ -253,7 +296,21 @@ namespace Minigolf
             if (V.gameState == GAMESTATE.STARTGAME)
             {
                 spriteBatch.Draw(C.TEXTURESTARTGAME, new Rectangle(Point.Zero, C.MAINWINDOW), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                spriteBatch.Draw(C.TEXTUREPLAYER1, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 16 / 30), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 5)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                spriteBatch.Draw(C.TEXTUREPLAYER2, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 16 / 30), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 5)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 V.playButton.Draw(spriteBatch);
+
+                if (V.selectedPlayer == 0)
+                {
+                    spriteBatch.Draw(C.TEXTURERECTSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURERECTNONSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                }
+                else
+                    if (V.selectedPlayer == -1)
+                {
+                    spriteBatch.Draw(C.TEXTURERECTNONSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURERECTSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                }
             }
             else if (V.gameState == GAMESTATE.LEVELCOMPLETE || V.gameState == GAMESTATE.ENDGAME)
             {
