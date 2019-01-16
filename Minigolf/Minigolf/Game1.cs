@@ -215,10 +215,14 @@ namespace Minigolf
                     }
                     else
                     {
-                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X > 0.4f)
-                            V.selectedPlayer = -1;
-                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X < -0.4f)
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X > 0.4f
+                            || Keyboard.GetState().IsKeyDown(Keys.Right))                        
+                            V.selectedPlayer = -1;                          
+                        
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X < -0.4f
+                        || Keyboard.GetState().IsKeyDown(Keys.Left))                        
                             V.selectedPlayer = 0;
+                           
                     }
                     break;
                 case GAMESTATE.START:

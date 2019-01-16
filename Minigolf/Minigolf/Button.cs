@@ -16,6 +16,7 @@ namespace Minigolf
         protected Rectangle rectangle;
         protected MouseState oldMouseState;
         protected GamePadState oldGamePadState;
+        protected KeyboardState oldKeyboardState;
 
         public Button(Texture2D[] arrayTexture, int LocationX, int LocationY)
         {
@@ -33,6 +34,8 @@ namespace Minigolf
             Rectangle posMouse = new Rectangle(newMouseState.X, newMouseState.Y, 1, 1);
 
             GamePadState newGamePadState = GamePad.GetState(PlayerIndex.One);
+
+            KeyboardState newKeyboardState = Keyboard.GetState();
 
             if (posMouse.Intersects(rectangle))
             {
@@ -65,6 +68,18 @@ namespace Minigolf
 
                 oldGamePadState = newGamePadState;
             }
+
+            if (newKeyboardState.IsKeyDown(Keys.Enter))
+                usingTexture = arrayTexture[2];
+            if(newKeyboardState.IsKeyUp(Keys.Enter) && oldKeyboardState.IsKeyDown(Keys.Enter))
+            {
+                usingTexture = arrayTexture[1];
+                oldKeyboardState = newKeyboardState;
+                C.buttonSound.Play();
+                return true;
+            }
+
+            oldKeyboardState = newKeyboardState;
 
             return false;
         }
