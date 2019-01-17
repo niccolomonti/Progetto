@@ -78,8 +78,10 @@ namespace Minigolf
             C.TEXTUREBAR = H.CreateTexture(GraphicsDevice, 1, 1, Color.Green);
             C.TEXTUREPLAYER1 = Content.Load<Texture2D>("player_Wario");
             C.TEXTUREPLAYER2 = Content.Load<Texture2D>("player_Waluigi");
-            C.TEXTURERECTSELECTION = Content.Load<Texture2D>("rectangleSelection");
-            C.TEXTURERECTNONSELECTION = Content.Load<Texture2D>("rectangleNonSelection");
+            C.TEXTURESELECTEDRECT = Content.Load<Texture2D>("selectedRect");
+            C.TEXTURENOTSELECTEDRECT = Content.Load<Texture2D>("selectedNotRect");
+            C.TEXTURESELECTEDSQUARE = Content.Load<Texture2D>("selectedSquare");
+            C.TEXTURENOTSELECTEDSQUARE = Content.Load<Texture2D>("selectedNotSquare");
             #endregion
 
             #region Load Animations
@@ -117,6 +119,7 @@ namespace Minigolf
 
             #region Load Sprites
             List<Dictionary<string, Animation>> playerAnimations = new List<Dictionary<string, Animation>>();
+
             playerAnimations.Add(playerAnimations_Wario);
             playerAnimations.Add(playerAnimations_Waluigi);
 
@@ -175,7 +178,7 @@ namespace Minigolf
             #region Button play e continue
             V.playButton = new Button(C.TEXTUREPLAY, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             V.continueButton = new Button(C.TEXTURECONTINUE, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
-            V.restartButton = new Button(C.TEXTURERESTART, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
+            V.restartButton = new Button(C.TEXTURERESTART, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5 - C.MAINWINDOW.Y / 7);
             #endregion
 
             H.ReadFile();
@@ -202,8 +205,11 @@ namespace Minigolf
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            foreach (var sprite in sprites)
-                sprite.Update(gameTime);
+            //foreach (var sprite in sprites)
+            //    sprite.Update(gameTime);
+            for (int i = 0; i < 3; i++)
+                if (i == V.selectedPlayer || i == 2 ) // per escludere il personaggio non selezionato
+                    sprites[i].Update(gameTime);
             
             switch (V.gameState)
             {
@@ -211,13 +217,13 @@ namespace Minigolf
                     if (V.playButton.Update())
                     {
                         V.gameState = GAMESTATE.START;
-                        sprites.RemoveAt(V.selectedPlayer + 1);
+                        //sprites.RemoveAt(V.selectedPlayer + 1);
                     }
                     else
                     {
                         if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X > 0.4f
                             || Keyboard.GetState().IsKeyDown(Keys.Right))                        
-                            V.selectedPlayer = -1;                          
+                            V.selectedPlayer = 1;                          
                         
                         if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X < -0.4f
                         || Keyboard.GetState().IsKeyDown(Keys.Left))                        
@@ -231,18 +237,25 @@ namespace Minigolf
                     V.gameState = GAMESTATE.GOTOBALL;
                     break;
                 case GAMESTATE.HITBALL:
-                    if (Vector2.Distance(sprites[0].Position, sprites[1].Position) > C.GETBALLDISTANCE)
+                    if (Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) > C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.GOTOBALL;
-                    if (sprites[1].selected)
+                    if (sprites[2].selected)
                         V.gameState = GAMESTATE.PLAY;
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
+                        || Keyboard.GetState().IsKeyDown(Keys.P))
+                    {
+                        V.previousGameState = V.gameState;
+                        V.selectedButton = 'c';
+                        V.gameState = GAMESTATE.PAUSE;
+                    }
                     break;
                 case GAMESTATE.PLAY:                    
-                    if (H.Intersect(sprites[1].Position.ToPoint(), V.endPositionRect[V.level]))
+                    if (H.Intersect(sprites[2].Position.ToPoint(), V.endPositionRect[V.level]))
                     {
-                        float d = Vector2.Distance(sprites[1].Position, V.endPosition[V.level]);
+                        float d = Vector2.Distance(sprites[2].Position, V.endPosition[V.level]);
                         if (d > 0.05f)
                         {
-                            sprites[1].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[1].Position) * 0.1f;
+                            sprites[2].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[2].Position) * 0.1f;
                             if (!V.flagForSound)
                             {
                                 C.ballInHole.Play();
@@ -265,17 +278,47 @@ namespace Minigolf
                     }
                     else
                     {
-                        if (sprites[1].velocity == Vector2.Zero && !sprites[1].selected)
+                        if (sprites[2].velocity == Vector2.Zero && !sprites[2].selected)
                             V.gameState = GAMESTATE.GOTOBALL;
+                    }
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
+                        || Keyboard.GetState().IsKeyDown(Keys.P))
+                    {
+                        V.previousGameState = V.gameState;
+                        V.selectedButton = 'c';
+                        V.gameState = GAMESTATE.PAUSE;
                     }
                     break;
                 case GAMESTATE.GOTOBALL:
-                    if(Vector2.Distance(sprites[0].Position, sprites[1].Position) < C.GETBALLDISTANCE)
+                    if(Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) < C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.HITBALL;
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
+                        || Keyboard.GetState().IsKeyDown(Keys.P))
+                    {
+                        V.previousGameState = V.gameState;
+                        V.selectedButton = 'c';
+                        V.gameState = GAMESTATE.PAUSE;
+                    }
                     break;
                 case GAMESTATE.LEVELCOMPLETE:
                     if (V.continueButton.Update())
                         V.gameState = GAMESTATE.START;
+                    break;
+                case GAMESTATE.PAUSE:
+                    if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f
+                        || Keyboard.GetState().IsKeyDown(Keys.Up))                    
+                        V.selectedButton = 'r';
+                    if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.4f
+                        || Keyboard.GetState().IsKeyDown(Keys.Down))
+                        V.selectedButton = 'c';
+
+                    if(V.selectedButton == 'r')
+                        if (V.restartButton.Update())
+                                V.gameState = GAMESTATE.STARTGAME;
+                    if(V.selectedButton == 'c')
+                        if (V.continueButton.Update())
+                            V.gameState = V.previousGameState;
+
                     break;
                 case GAMESTATE.ENDGAME:
                     break;
@@ -306,14 +349,13 @@ namespace Minigolf
 
                 if (V.selectedPlayer == 0)
                 {
-                    spriteBatch.Draw(C.TEXTURERECTSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
-                    spriteBatch.Draw(C.TEXTURERECTNONSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURESELECTEDRECT, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURENOTSELECTEDRECT, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 }
-                else
-                    if (V.selectedPlayer == -1)
+                else if (V.selectedPlayer == 1)
                 {
-                    spriteBatch.Draw(C.TEXTURERECTNONSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
-                    spriteBatch.Draw(C.TEXTURERECTSELECTION, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURENOTSELECTEDRECT, new Rectangle(new Point(C.MAINWINDOW.X * 9 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURESELECTEDRECT, new Rectangle(new Point(C.MAINWINDOW.X * 16 / 30, C.MAINWINDOW.Y * 43 / 60), new Point(C.MAINWINDOW.X / 6, C.MAINWINDOW.Y / 12)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 }
             }
             else if (V.gameState == GAMESTATE.LEVELCOMPLETE || V.gameState == GAMESTATE.ENDGAME)
@@ -337,6 +379,21 @@ namespace Minigolf
                 if (V.gameState == GAMESTATE.LEVELCOMPLETE)
                     V.continueButton.Draw(spriteBatch);
             }
+            else if (V.gameState == GAMESTATE.PAUSE)
+            {
+                V.restartButton.Draw(spriteBatch);
+                V.continueButton.Draw(spriteBatch);
+                if (V.selectedButton == 'c')
+                {
+                    spriteBatch.Draw(C.TEXTURESELECTEDSQUARE, new Rectangle(new Point(C.MAINWINDOW.X / 2 - C.MAINWINDOW.X / 5, C.MAINWINDOW.Y * 81/100), new Point(C.MAINWINDOW.X / 9, C.MAINWINDOW.X / 9)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURENOTSELECTEDSQUARE, new Rectangle(new Point(C.MAINWINDOW.X / 2 - C.MAINWINDOW.X / 5, C.MAINWINDOW.Y * 81/100 - C.MAINWINDOW.Y / 7), new Point(C.MAINWINDOW.X / 9, C.MAINWINDOW.X / 9)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                }                
+                else if (V.selectedButton == 'r')
+                {
+                    spriteBatch.Draw(C.TEXTURENOTSELECTEDSQUARE, new Rectangle(new Point(C.MAINWINDOW.X / 2 - C.MAINWINDOW.X / 5, C.MAINWINDOW.Y * 81/100), new Point(C.MAINWINDOW.X / 9, C.MAINWINDOW.X / 9)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                    spriteBatch.Draw(C.TEXTURESELECTEDSQUARE, new Rectangle(new Point(C.MAINWINDOW.X / 2 - C.MAINWINDOW.X / 5, C.MAINWINDOW.Y * 81/100 - C.MAINWINDOW.Y / 7), new Point(C.MAINWINDOW.X / 9, C.MAINWINDOW.X / 9)), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                }
+            }
             else
             {
                 foreach (var rect in V.listTrack)
@@ -348,8 +405,9 @@ namespace Minigolf
                 spriteBatch.Draw(C.TEXTUREHOLE, V.endPositionRect[V.level], null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 foreach (var sprite in V.listSpriteLevel)
                     sprite.Draw(spriteBatch);
-                foreach (var sprite in sprites)
-                    sprite.Draw(spriteBatch);
+                for(int i=0; i<3; i++)
+                    if (i == V.selectedPlayer || i == 2) // per escludere il personaggio non selezionato
+                        sprites[i].Draw(spriteBatch);
             }
 
            

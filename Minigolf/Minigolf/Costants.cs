@@ -42,9 +42,13 @@ namespace Minigolf
         public static Texture2D TEXTUREHOLE, TEXTURESTART;
         #endregion
 
-        #region Texture personaggi e barre di selezione
-        public static Texture2D TEXTUREPLAYER1, TEXTUREPLAYER2, TEXTURERECTSELECTION, TEXTURERECTNONSELECTION;
+        #region Texture personaggi e barre di selezione dei personaggi
+        public static Texture2D TEXTUREPLAYER1, TEXTUREPLAYER2, TEXTURESELECTEDRECT, TEXTURENOTSELECTEDRECT;
         #endregion
+
+        #region Texture barre di selezione dei button Continue e Restart
+        public static Texture2D TEXTURESELECTEDSQUARE, TEXTURENOTSELECTEDSQUARE;
+        # endregion;
 
         #region Dati Ball
         public static Texture2D TEXTUREBALL;

@@ -87,6 +87,6 @@ namespace Minigolf
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(usingTexture, rectangle, Color.White);
-        }
+        }        
     }
 }

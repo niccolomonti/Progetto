@@ -10,12 +10,13 @@ using Minigolf.Sprites;
 
 namespace Minigolf
 {
-    public enum GAMESTATE { STARTGAME, START, HITBALL, GOTOBALL, PLAY, LEVELCOMPLETE, ENDGAME };
+    public enum GAMESTATE { STARTGAME, START, HITBALL, GOTOBALL, PLAY, LEVELCOMPLETE, ENDGAME, PAUSE };
                                             
     public static class V //Variables
     { 
         public static Random random = new Random();
         public static GAMESTATE gameState = GAMESTATE.STARTGAME;
+        public static GAMESTATE previousGameState; // serve per lo stato di PAUSE
         public static ProgressBar bar;
 
         #region Mappe livelli
@@ -37,6 +38,8 @@ namespace Minigolf
 
         public static bool flagForSound = false;
 
-        public static int selectedPlayer = 0; // 0 for Wario e -1 for Waluigi
+        public static int selectedPlayer = 0; // 0 per Wario e 1 per Waluigi
+
+        public static char selectedButton = 'c'; // 'c' for Continue 'r' per Restart
     }
 }
