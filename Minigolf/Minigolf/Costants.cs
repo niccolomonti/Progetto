@@ -24,14 +24,16 @@ namespace Minigolf
         #endregion
 
         #region Nome e numero files contenenti i layout
-        public static int MAXLEVEL = 2;
+        public static int MAXLEVEL = 4;
         public static string[] FILENAME =
         {
             @"..\..\..\..\Layout\Level0.txt",
             @"..\..\..\..\Layout\Level1.txt",
-            @"..\..\..\..\Layout\Level2.txt"
+            @"..\..\..\..\Layout\Level2.txt",
+            @"..\..\..\..\Layout\Level3.txt",
+            @"..\..\..\..\Layout\Level4.txt"
         };
-        public static int[] PAR = { 2, 4, 10 };
+        public static int[] PAR = { 2, 4, 9, 8, 9 };
         #endregion
 
         #region Texture di start game e Tabellone punteggi
