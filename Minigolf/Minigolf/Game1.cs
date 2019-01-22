@@ -218,6 +218,7 @@ namespace Minigolf
             switch (V.gameState)
             {
                 case GAMESTATE.STARTGAME:
+                    V.level = 0; // necessario se si effettua il Restart
                     if (V.playButton.Update())
                     {
                         V.gameState = GAMESTATE.START;
@@ -312,18 +313,33 @@ namespace Minigolf
                     if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A) 
                         && Math.Abs(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y) < 0.2 )
                     {
-                        if (V.restartButton.Update())
-                            V.gameState = GAMESTATE.STARTGAME;
-                        else if (V.continueButton.Update())
-                            V.gameState = V.previousGameState;
+                        if (Keyboard.GetState().IsKeyDown(Keys.Up))                        
+                            V.selectedButton = 'r';                       
+                        if (Keyboard.GetState().IsKeyDown(Keys.Down))                        
+                            V.selectedButton = 'c';
+
+                        if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                        {
+                            if (V.selectedButton == 'r')
+                                if (V.restartButton.Update())
+                                    V.gameState = GAMESTATE.STARTGAME;
+                            if (V.selectedButton == 'c')
+                                if (V.continueButton.Update())
+                                    V.gameState = V.previousGameState;
+                        }
+                        else
+                        {
+                            if (V.restartButton.Update())
+                                V.gameState = GAMESTATE.STARTGAME;
+                            else if (V.continueButton.Update())
+                                V.gameState = V.previousGameState;
+                        }
                     }
                     else
                     {
-                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f
-                            || Keyboard.GetState().IsKeyDown(Keys.Up))
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f)
                             V.selectedButton = 'r';
-                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.4f
-                            || Keyboard.GetState().IsKeyDown(Keys.Down))
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.4f)
                             V.selectedButton = 'c';
 
                         if (V.selectedButton == 'r')
@@ -335,6 +351,22 @@ namespace Minigolf
                     }
                     break;
                 case GAMESTATE.ENDGAME:
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A)
+                        && Math.Abs(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y) < 0.2)
+                    {
+                        if (V.restartButton.Update())
+                            V.gameState = GAMESTATE.STARTGAME;                        
+                    }
+                    else
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f
+                            || Keyboard.GetState().IsKeyDown(Keys.Up))
+                            V.selectedButton = 'r';                        
+
+                        if (V.selectedButton == 'r')
+                            if (V.restartButton.Update())
+                                V.gameState = GAMESTATE.STARTGAME;                        
+                    }
                     break;
             }
 
@@ -392,6 +424,8 @@ namespace Minigolf
 
                 if (V.gameState == GAMESTATE.LEVELCOMPLETE)
                     V.continueButton.Draw(spriteBatch);
+                else if (V.gameState == GAMESTATE.ENDGAME)
+                    V.restartButton.Draw(spriteBatch);
             }
             else if (V.gameState == GAMESTATE.PAUSE)
             {

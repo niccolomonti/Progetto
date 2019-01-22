@@ -24,8 +24,7 @@ namespace Minigolf
         public static Vector2[] startPosition = new Vector2[C.MAXLEVEL + 1];
         public static Vector2[] endPosition = new Vector2[C.MAXLEVEL + 1];
         public static Rectangle[] endPositionRect = new Rectangle[C.MAXLEVEL + 1];
-        public static List<Sprite> listSpriteLevel = new List<Sprite>();
-        public static int level = 0;
+        public static List<Sprite> listSpriteLevel = new List<Sprite>();        
         public static List<Rectangle> listTrack = new List<Rectangle>();
         #endregion
 
@@ -33,6 +32,7 @@ namespace Minigolf
         public static Button playButton, continueButton, restartButton;
         #endregion
 
+        public static int level = 0;
         public static int countHit = 0;
         public static int[] hit = new int[C.MAXLEVEL + 1];
 
