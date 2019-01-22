@@ -207,10 +207,14 @@ namespace Minigolf
 
             //foreach (var sprite in sprites)
             //    sprite.Update(gameTime);
-            for (int i = 0; i < 3; i++)
-                if (i == V.selectedPlayer || i == 2 ) // per escludere il personaggio non selezionato
-                    sprites[i].Update(gameTime);
-            
+
+            if (V.gameState != GAMESTATE.PAUSE) // per non far cambiare la posizione del personaggio durante la pausa 
+            {
+                for (int i = 0; i < 3; i++)
+                    if (i == V.selectedPlayer || i == 2) // per escludere il personaggio non selezionato                    
+                        sprites[i].Update(gameTime);
+            }
+
             switch (V.gameState)
             {
                 case GAMESTATE.STARTGAME:
@@ -305,20 +309,30 @@ namespace Minigolf
                         V.gameState = GAMESTATE.START;
                     break;
                 case GAMESTATE.PAUSE:
-                    if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f
-                        || Keyboard.GetState().IsKeyDown(Keys.Up))                    
-                        V.selectedButton = 'r';
-                    if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.4f
-                        || Keyboard.GetState().IsKeyDown(Keys.Down))
-                        V.selectedButton = 'c';
-
-                    if(V.selectedButton == 'r')
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A) 
+                        && Math.Abs(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y) < 0.2 )
+                    {
                         if (V.restartButton.Update())
-                                V.gameState = GAMESTATE.STARTGAME;
-                    if(V.selectedButton == 'c')
-                        if (V.continueButton.Update())
+                            V.gameState = GAMESTATE.STARTGAME;
+                        else if (V.continueButton.Update())
                             V.gameState = V.previousGameState;
+                    }
+                    else
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > 0.4f
+                            || Keyboard.GetState().IsKeyDown(Keys.Up))
+                            V.selectedButton = 'r';
+                        if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.4f
+                            || Keyboard.GetState().IsKeyDown(Keys.Down))
+                            V.selectedButton = 'c';
 
+                        if (V.selectedButton == 'r')
+                            if (V.restartButton.Update())
+                                V.gameState = GAMESTATE.STARTGAME;
+                        if (V.selectedButton == 'c')
+                            if (V.continueButton.Update())
+                                V.gameState = V.previousGameState;
+                    }
                     break;
                 case GAMESTATE.ENDGAME:
                     break;
