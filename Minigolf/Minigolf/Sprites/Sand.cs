@@ -20,7 +20,8 @@ namespace Minigolf.Sprites
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, rectangle, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+            //spriteBatch.Draw(texture, rectangle, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+            spriteBatch.Draw(texture: texture, destinationRectangle: rectangle, sourceRectangle: null, color: Color.White, rotation: 0, origin: Vector2.Zero, scale: new Vector2(C.PIXELSXPOINT.X / 15, C.PIXELSXPOINT.X / 15), effects: SpriteEffects.None, layerDepth: 0.8f);            
         }
     }
 }

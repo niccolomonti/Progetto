@@ -14,7 +14,7 @@ namespace Minigolf
     {
         #region Dimensioni Finestra e Griglia
         public static Point MAINGRID = new Point(68, 53);
-        public static Point PIXELSXPOINT = new Point(15);
+        public static Point PIXELSXPOINT = new Point(15); // original: 15
         public static Point MAINWINDOW = MAINGRID * PIXELSXPOINT;
         #endregion
 
@@ -54,7 +54,7 @@ namespace Minigolf
 
         #region Dati Ball
         public static Texture2D TEXTUREBALL;
-        public static float BALLRADIUS = 7.5f;
+        public static float BALLRADIUS = PIXELSXPOINT.X / 2;
         public static float FRICTION = 0.997f;
         public static float MAXSPEED = 13f;
         public static float MINSPEED = 0.05f;
@@ -84,14 +84,14 @@ namespace Minigolf
         public static Texture2D[] TEXTUREPLAY = new Texture2D[3];
         public static Texture2D[] TEXTURECONTINUE = new Texture2D[3];
         public static Texture2D[] TEXTURERESTART = new Texture2D[3];
-        public static Point DIMBUTTON = new Point(295, 97);
+        public static Point DIMBUTTON = new Point((int)(C.PIXELSXPOINT.X * 19.67f), (int)(C.PIXELSXPOINT.X * 6.467f)); // original: 295, 97
         #endregion
 
         #region altre costanti
 
         public static Texture2D TEXTUREARROW;
         public static int CUEATTENUATION = 50;
-        public static float GETBALLDISTANCE = 30f;
+        public static float GETBALLDISTANCE = 2 * C.PIXELSXPOINT.X; // original: 30f
         #endregion
 
         #region Suoni

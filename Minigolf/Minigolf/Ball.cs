@@ -217,7 +217,7 @@ namespace Minigolf
                 H.DrawArrow(spriteBatch, C.TEXTUREARROW, mousePosition, position);
             else
                 if (gamePadCueOn)
-                H.DrawArrow(spriteBatch, C.TEXTUREARROW, gamepadPosition, position);
+                    H.DrawArrow(spriteBatch, C.TEXTUREARROW, gamepadPosition, position);
 
         }
     }

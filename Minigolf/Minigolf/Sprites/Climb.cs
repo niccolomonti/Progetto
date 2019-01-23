@@ -41,7 +41,7 @@ namespace Minigolf.Sprites
             if (orientation == 1 || orientation == 3)
                 origin = H.Invert(origin);
 
-            sprite.Draw(texture, center, null, Color.White, orientation * (float)Math.PI / 2, origin, 1, SpriteEffects.None, 0.8f);
+            sprite.Draw(texture, center, null, Color.White, orientation * (float)Math.PI / 2, origin, C.PIXELSXPOINT.X / 15, SpriteEffects.None, 0.8f);
         }
     }
 }

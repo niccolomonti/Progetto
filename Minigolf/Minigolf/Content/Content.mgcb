@@ -205,13 +205,6 @@
 /processorParam:TextureFormat=Color
 /build:end.png
 
-#begin font.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:font.spritefont
-
 #begin Hole.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -452,12 +445,19 @@
 /processorParam:TextureFormat=Color
 /build:Sand.png
 
-#begin scoreFont.spritefont
+#begin scoreFont_big.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:scoreFont.spritefont
+/build:scoreFont_big.spritefont
+
+#begin scoreFont_small.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:scoreFont_small.spritefont
 
 #begin selectedNotRect.png
 /importer:TextureImporter

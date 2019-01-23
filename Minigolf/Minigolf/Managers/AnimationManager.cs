@@ -55,7 +55,7 @@ namespace Minigolf.Managers
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-           spriteBatch.Draw(animation.Texture, position - animation.Offset, new Rectangle(animation.CurrentFrame * animation.FrameWidth, 0, animation.FrameWidth, animation.FrameHeight), Color.White, 0 , Vector2.Zero, 1, SpriteEffects.None, 0.4f);
+           spriteBatch.Draw(animation.Texture, position - animation.Offset, new Rectangle(animation.CurrentFrame * animation.FrameWidth, 0, animation.FrameWidth, animation.FrameHeight), Color.White, 0 , Vector2.Zero, C.PIXELSXPOINT.X / 15, SpriteEffects.None, 0.4f);
         }
     }
 }

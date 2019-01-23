@@ -52,13 +52,18 @@ namespace Minigolf
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>("scoreFont");
+
+            if(C.PIXELSXPOINT.X == 15)
+                spriteFont = Content.Load<SpriteFont>("scoreFont_small");
+            else if (C.PIXELSXPOINT.X == 30)
+                spriteFont = Content.Load<SpriteFont>("scoreFont_big");
+
 
             #region Load Texture
             C.TEXTUREBACKGROUND = Content.Load<Texture2D>("Background");
             C.TEXTURESTARTGAME = Content.Load<Texture2D>("Start");
             C.TEXTURESCORE = Content.Load<Texture2D>("Tabellone");
-            C.TEXTURETRACK = H.CreateTexture(GraphicsDevice, 15, 15, Color.Coral); //Content.Load<Texture2D>("Track");
+            C.TEXTURETRACK = H.CreateTexture(GraphicsDevice, /*15, 15,*/C.PIXELSXPOINT.X, C.PIXELSXPOINT.Y, Color.Coral); //Content.Load<Texture2D>("Track");
             C.TEXTUREWALL = Content.Load<Texture2D>("Wall");
             C.TEXTURESAND = Content.Load<Texture2D>("Sand");
             C.TEXTURECLIMB = Content.Load<Texture2D>("Climb");
@@ -178,7 +183,7 @@ namespace Minigolf
             #region Button play e continue
             V.playButton = new Button(C.TEXTUREPLAY, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             V.continueButton = new Button(C.TEXTURECONTINUE, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
-            V.restartButton = new Button(C.TEXTURERESTART, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5 - C.MAINWINDOW.Y / 7);
+            V.restartButton = new Button(C.TEXTURERESTART, C.MAINWINDOW.X / 2, 23 * C.MAINWINDOW.Y / 35);
             #endregion
 
             H.ReadFile();
@@ -407,20 +412,20 @@ namespace Minigolf
             else if (V.gameState == GAMESTATE.LEVELCOMPLETE || V.gameState == GAMESTATE.ENDGAME)
             {
                 string s;
-                int dx = 69;
+                int dx = /*(int)4.6*/5*C.PIXELSXPOINT.X; // original: 69
                 int total = 0;
-                spriteBatch.DrawString(spriteFont, "LEVEL COMPLETE", new Vector2(400, 150), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0.8f);
-                spriteBatch.Draw(C.TEXTURESCORE, new Rectangle(60, 200 ,900, 200), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
+                spriteBatch.DrawString(spriteFont, "LEVEL COMPLETE", new Vector2((int)26.7 * C.PIXELSXPOINT.X, 10 * C.PIXELSXPOINT.Y), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0.8f);
+                spriteBatch.Draw(C.TEXTURESCORE, new Rectangle(4*C.PIXELSXPOINT.X, (int)13.33*C.PIXELSXPOINT.X, 60*C.PIXELSXPOINT.X, (int)13.33*C.PIXELSXPOINT.X), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 for (int c = 0; c <= C.MAXLEVEL; c++)
                 {
-                    spriteBatch.DrawString(spriteFont, C.PAR[c].ToString(), new Vector2(365 + c * dx, 255), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
+                    spriteBatch.DrawString(spriteFont, C.PAR[c].ToString(), new Vector2((int)24.33*C.PIXELSXPOINT.X + c * dx, 17*C.PIXELSXPOINT.X), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
                     s = V.hit[c] == 0 ? "-" : V.hit[c].ToString();
-                    spriteBatch.DrawString(spriteFont, s, new Vector2(365 + c * dx, 305), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
+                    spriteBatch.DrawString(spriteFont, s, new Vector2((int)24.33 * C.PIXELSXPOINT.X + c * dx, (int)20.33*C.PIXELSXPOINT.X), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
                     s = V.hit[c] == 0 ? "" : (V.hit[c] - C.PAR[c]).ToString();
-                    spriteBatch.DrawString(spriteFont, s, new Vector2(365 + c * dx, 355), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
+                    spriteBatch.DrawString(spriteFont, s, new Vector2((int)24.33 * C.PIXELSXPOINT.X + c * dx, (int)23.67*C.PIXELSXPOINT.X), Color.Black, 0, Vector2.Zero, 1, SpriteEffects.None, 0.6f);
                     total += V.hit[c] != 0 ? V.hit[c] - C.PAR[c] : 0;
                 }
-                spriteBatch.DrawString(spriteFont, total.ToString(), new Vector2(800, 355), Color.Red, 0 ,Vector2.Zero, 1, SpriteEffects.None, 0.6f);
+                spriteBatch.DrawString(spriteFont, total.ToString(), new Vector2((int)53.33*C.PIXELSXPOINT.X, (int)23.67 * C.PIXELSXPOINT.X), Color.Red, 0 ,Vector2.Zero, 1, SpriteEffects.None, 0.6f);
 
                 if (V.gameState == GAMESTATE.LEVELCOMPLETE)
                     V.continueButton.Draw(spriteBatch);
@@ -448,7 +453,7 @@ namespace Minigolf
                 {
                     spriteBatch.Draw(C.TEXTURETRACK, rect, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.9f);
                 }
-                spriteBatch.DrawString(spriteFont, "Hits: " + V.countHit.ToString(), new Vector2(25, 25), Color.White);
+                spriteBatch.DrawString(spriteFont, "Hits: " + V.countHit.ToString(), new Vector2((int)1.67*C.PIXELSXPOINT.X, (int)1.67 * C.PIXELSXPOINT.X), Color.White);
 
                 spriteBatch.Draw(C.TEXTUREHOLE, V.endPositionRect[V.level], null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0.8f);
                 foreach (var sprite in V.listSpriteLevel)
