@@ -76,7 +76,7 @@ namespace Minigolf
                     animationManager.Update(gameTime);
                     position += velocity;
                     velocity = Vector2.Zero;
-                    break;
+                    break;                
                 default:
                     Move();
                     SetAnimation();

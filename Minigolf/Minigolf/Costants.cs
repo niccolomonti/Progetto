@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace Minigolf
 {
@@ -95,7 +96,8 @@ namespace Minigolf
         #endregion
 
         #region Suoni
-        public static SoundEffect buttonSound, golfShot, ballHitWall, ballInHole, applause, boo;
+        public static SoundEffect buttonSound, golfShot, ballHitWall, ballInHole, applause, boo/*, startGameMusic, pauseMusic*/;
+        public static Song startGameMusic, pauseMusic, playMusic;
         #endregion
 
         #region Progress Bar

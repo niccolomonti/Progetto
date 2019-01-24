@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Minigolf.Sprites;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Minigolf
 {
@@ -37,9 +38,11 @@ namespace Minigolf
         public static int[] hit = new int[C.MAXLEVEL + 1];
 
         public static bool flagForSound = false;
+        public static bool flagForSound2 = false; // serve per playMusic in contemporanea con hole
 
         public static int selectedPlayer = 0; // 0 per Wario e 1 per Waluigi
 
         public static char selectedButton = 'c'; // 'c' for Continue 'r' per Restart
+        
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Minigolf.Sprites;
 using Minigolf.Models;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace Minigolf
 {
@@ -178,8 +179,14 @@ namespace Minigolf
             C.ballInHole = Content.Load<SoundEffect>(@"Sound/Hole_in_-Public_d-189_hifi");
             C.applause = Content.Load<SoundEffect>(@"Sound/applause-5");
             C.boo = Content.Load<SoundEffect>(@"Sound/Boocrap-Tucker_J-7897_hifi");
-            #endregion
 
+            C.startGameMusic = Content.Load<Song>(@"Sound/148407_Wii_Sports_Theme_MP3");            
+            C.pauseMusic = Content.Load<Song>(@"Sound/721899_Press-Start_MP3");
+            C.playMusic = Content.Load<Song>(@"Sound/539282_Fairtown_MP3");
+
+            MediaPlayer.IsRepeating = true;
+            #endregion
+            
             #region Button play e continue
             V.playButton = new Button(C.TEXTUREPLAY, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
             V.continueButton = new Button(C.TEXTURECONTINUE, C.MAINWINDOW.X / 2, 4 * C.MAINWINDOW.Y / 5);
@@ -224,10 +231,23 @@ namespace Minigolf
             {
                 case GAMESTATE.STARTGAME:
                     V.level = 0; // necessario se si effettua il Restart
+
+                    if (!V.flagForSound)
+                    {
+                        //C.startGameMusic.Play();
+                        MediaPlayer.Play(C.startGameMusic);
+                        V.flagForSound = true;
+                    }
+
+
                     if (V.playButton.Update())
                     {
+                        //C.startGameMusic.Dispose(); 
+                        MediaPlayer.Stop();
+                        V.flagForSound = false;
+                        
                         V.gameState = GAMESTATE.START;
-                        //sprites.RemoveAt(V.selectedPlayer + 1);
+                        //sprites.RemoveAt(V.selectedPlayer + 1);                            
                     }
                     else
                     {
@@ -247,6 +267,12 @@ namespace Minigolf
                     V.gameState = GAMESTATE.GOTOBALL;
                     break;
                 case GAMESTATE.HITBALL:
+                    if (!V.flagForSound)
+                    {
+                        MediaPlayer.Play(C.playMusic);
+                        V.flagForSound = true;
+                    }
+
                     if (Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) > C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.GOTOBALL;
                     if (sprites[2].selected)
@@ -256,34 +282,54 @@ namespace Minigolf
                     {
                         V.previousGameState = V.gameState;
                         V.selectedButton = 'c';
+                        MediaPlayer.Stop();
+                        V.flagForSound = false;
                         V.gameState = GAMESTATE.PAUSE;
                     }
                     break;
-                case GAMESTATE.PLAY:                    
+                case GAMESTATE.PLAY:
+                    if (!V.flagForSound)
+                    {
+                        MediaPlayer.Play(C.playMusic);
+                        V.flagForSound = true;
+                    }
+
                     if (H.Intersect(sprites[2].Position.ToPoint(), V.endPositionRect[V.level]))
                     {
                         float d = Vector2.Distance(sprites[2].Position, V.endPosition[V.level]);
-                        if (d > 0.05f)
+                        if (d > 0.00333f*C.PIXELSXPOINT.X) // original: 0.05f
                         {
-                            sprites[2].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[2].Position) * 0.1f;
-                            if (!V.flagForSound)
-                            {
+                            sprites[2].velocity = Vector2.Normalize(V.endPosition[V.level] - sprites[2].Position) * 0.00667f*C.PIXELSXPOINT.X; // original: 0.1f
+                            
+                            if (!V.flagForSound2)
+                            {                               
                                 C.ballInHole.Play();
-                                V.flagForSound = true;
+                                V.flagForSound2 = true;
                             }
                         }
                         else
                         {
-                            V.flagForSound = false;
+                            V.flagForSound2 = false;
+
                             if (V.countHit <= C.PAR[V.level])
-                                C.applause.Play();
+                            {
+                                C.applause.Play();                                
+                            }
                             else
                                 C.boo.Play();
-                            V.hit[V.level] = V.countHit;                            
+                            V.hit[V.level] = V.countHit;
                             if (++V.level <= C.MAXLEVEL)
+                            {
+                                MediaPlayer.Stop();
+                                V.flagForSound = false;
                                 V.gameState = GAMESTATE.LEVELCOMPLETE;
+                            }
                             else
+                            {
+                                MediaPlayer.Stop();
+                                V.flagForSound = false;
                                 V.gameState = GAMESTATE.ENDGAME;
+                            }
                         }
                     }
                     else
@@ -296,25 +342,60 @@ namespace Minigolf
                     {
                         V.previousGameState = V.gameState;
                         V.selectedButton = 'c';
+                        MediaPlayer.Stop();
+                        V.flagForSound = false;
                         V.gameState = GAMESTATE.PAUSE;
                     }
                     break;
                 case GAMESTATE.GOTOBALL:
-                    if(Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) < C.GETBALLDISTANCE)
+                    if (!V.flagForSound)
+                    {                        
+                        MediaPlayer.Play(C.playMusic);
+                        V.flagForSound = true;
+                    }
+                    if (Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) < C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.HITBALL;
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
                         || Keyboard.GetState().IsKeyDown(Keys.P))
                     {
                         V.previousGameState = V.gameState;
                         V.selectedButton = 'c';
+                        MediaPlayer.Stop();
+                        V.flagForSound = false;
                         V.gameState = GAMESTATE.PAUSE;
                     }
                     break;
                 case GAMESTATE.LEVELCOMPLETE:
+                    C.applause.CreateInstance().Stop(true);
+                    if (C.applause.CreateInstance().State == SoundState.Stopped)
+                    {
+                        if (!V.flagForSound)
+                        {
+                            //C.pauseMusic.Play(0.5f, 0.0f, 0.0f); // a metà volume
+                            MediaPlayer.Play(C.pauseMusic);
+                            MediaPlayer.Volume = 0.3f; 
+                            V.flagForSound = true;
+                        }
+                    }
                     if (V.continueButton.Update())
+                    {
+                        //C.pauseMusic.Dispose();
+                        MediaPlayer.Stop();
+                        MediaPlayer.Volume = 1f;
+                        V.flagForSound = false;
                         V.gameState = GAMESTATE.START;
+                    }
+                    
                     break;
                 case GAMESTATE.PAUSE:
+                    if (!V.flagForSound)
+                    {
+                        //C.pauseMusic.Play(0.5f, 0.0f, 0.0f); // a metà volume
+                        MediaPlayer.Play(C.pauseMusic);
+                        MediaPlayer.Volume = 0.3f;
+                        V.flagForSound = true;
+                    }
+
                     if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A) 
                         && Math.Abs(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y) < 0.2 )
                     {
@@ -327,17 +408,41 @@ namespace Minigolf
                         {
                             if (V.selectedButton == 'r')
                                 if (V.restartButton.Update())
+                                {
+                                    //C.pauseMusic.Dispose();
+                                    MediaPlayer.Stop();
+                                    MediaPlayer.Volume = 1f;
+                                    V.flagForSound = false;
                                     V.gameState = GAMESTATE.STARTGAME;
+                                }
                             if (V.selectedButton == 'c')
                                 if (V.continueButton.Update())
+                                {
+                                    //C.pauseMusic.Dispose();
+                                    MediaPlayer.Stop();
+                                    MediaPlayer.Volume = 1f;
+                                    V.flagForSound = false;
                                     V.gameState = V.previousGameState;
+                                }
                         }
                         else
                         {
                             if (V.restartButton.Update())
+                            {
+                                //C.pauseMusic.Dispose();
+                                MediaPlayer.Stop();
+                                MediaPlayer.Volume = 1f;
+                                V.flagForSound = false;
                                 V.gameState = GAMESTATE.STARTGAME;
+                            }
                             else if (V.continueButton.Update())
+                            {
+                                //C.pauseMusic.Dispose();
+                                MediaPlayer.Stop();
+                                MediaPlayer.Volume = 1f;
+                                V.flagForSound = false;
                                 V.gameState = V.previousGameState;
+                            }
                         }
                     }
                     else
@@ -349,18 +454,44 @@ namespace Minigolf
 
                         if (V.selectedButton == 'r')
                             if (V.restartButton.Update())
+                            {
+                                //C.pauseMusic.Dispose();
+                                MediaPlayer.Stop();
+                                MediaPlayer.Volume = 1f;
+                                V.flagForSound = false;
                                 V.gameState = GAMESTATE.STARTGAME;
+                            }
                         if (V.selectedButton == 'c')
                             if (V.continueButton.Update())
+                            {
+                                //C.pauseMusic.Dispose();
+                                MediaPlayer.Stop();
+                                MediaPlayer.Volume = 1f;
+                                V.flagForSound = false;
                                 V.gameState = V.previousGameState;
+                            }
                     }
                     break;
                 case GAMESTATE.ENDGAME:
+                    if (!V.flagForSound)
+                    {
+                        //C.pauseMusic.Play(0.5f, 0.0f, 0.0f); // a metà volume
+                        MediaPlayer.Play(C.pauseMusic);
+                        MediaPlayer.Volume = 0.03f;
+                        V.flagForSound = true;
+                    }
+
                     if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A)
                         && Math.Abs(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y) < 0.2)
                     {
                         if (V.restartButton.Update())
-                            V.gameState = GAMESTATE.STARTGAME;                        
+                        {
+                            //C.pauseMusic.Dispose();
+                            MediaPlayer.Stop();
+                            MediaPlayer.Volume = 1f;
+                            V.flagForSound = false;
+                            V.gameState = GAMESTATE.STARTGAME;
+                        }
                     }
                     else
                     {
@@ -370,7 +501,13 @@ namespace Minigolf
 
                         if (V.selectedButton == 'r')
                             if (V.restartButton.Update())
-                                V.gameState = GAMESTATE.STARTGAME;                        
+                            {
+                                //.pauseMusic.Dispose();
+                                MediaPlayer.Stop();
+                                MediaPlayer.Volume = 1f;
+                                V.flagForSound = false;
+                                V.gameState = GAMESTATE.STARTGAME;
+                            }
                     }
                     break;
             }

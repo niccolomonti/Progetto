@@ -507,6 +507,24 @@
 /processorParam:TextureFormat=Color
 /build:selectedSquare.png
 
+#begin Sound/148407_Wii_Sports_Theme_MP3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sound/148407_Wii_Sports_Theme_MP3.mp3
+
+#begin Sound/539282_Fairtown_MP3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sound/539282_Fairtown_MP3.mp3
+
+#begin Sound/721899_Press-Start_MP3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sound/721899_Press-Start_MP3.mp3
+
 #begin Sound/applause-5.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
