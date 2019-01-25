@@ -187,6 +187,12 @@ namespace Minigolf
                 case GAMESTATE.HITBALL:
                     ManageHitBall();
                     break;
+                case GAMESTATE.HITBALL2:                    
+                    position = NextPosition();
+                    rectangle.Location = new Point((int)(position.X - radius), (int)(position.Y - radius));
+                    if (velocity == Vector2.Zero)
+                        ManageHitBall();
+                    break;
                 case GAMESTATE.GOTOBALL:
                     break;
                 case GAMESTATE.PLAY:

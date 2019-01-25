@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace Minigolf
 {
-    public enum GAMESTATE { STARTGAME, START, HITBALL, GOTOBALL, PLAY, LEVELCOMPLETE, ENDGAME, PAUSE };
+    public enum GAMESTATE { STARTGAME, START, HITBALL, HITBALL2, GOTOBALL, PLAY, LEVELCOMPLETE, ENDGAME, PAUSE };
                                             
     public static class V //Variables
     { 

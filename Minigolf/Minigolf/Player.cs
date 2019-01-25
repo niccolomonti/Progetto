@@ -70,6 +70,12 @@ namespace Minigolf
                     SetAnimation();
                     animationManager.Update(gameTime);                    
                     break;
+                case GAMESTATE.HITBALL2:                    
+                    SetAnimation();
+                    animationManager.Update(gameTime);
+                    position += velocity;
+                    velocity = Vector2.Zero;
+                    break;
                 case GAMESTATE.PLAY:
                     Move();
                     SetAnimation();

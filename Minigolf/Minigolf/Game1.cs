@@ -275,7 +275,28 @@ namespace Minigolf
 
                     if (Vector2.Distance(sprites[V.selectedPlayer].Position, sprites[2].Position) > C.GETBALLDISTANCE)
                         V.gameState = GAMESTATE.GOTOBALL;
+                    //if (sprites[2].selected)
+                    //    V.gameState = GAMESTATE.PLAY;
                     if (sprites[2].selected)
+                        V.gameState = GAMESTATE.HITBALL2;
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
+                        || Keyboard.GetState().IsKeyDown(Keys.P))
+                    {
+                        V.previousGameState = V.gameState;
+                        V.selectedButton = 'c';
+                        MediaPlayer.Stop();
+                        V.flagForSound = false;
+                        V.gameState = GAMESTATE.PAUSE;
+                    }
+                    break;
+                case GAMESTATE.HITBALL2:
+                    if (!V.flagForSound)
+                    {
+                        MediaPlayer.Play(C.playMusic);
+                        V.flagForSound = true;
+                    }
+
+                    if (!sprites[2].selected)
                         V.gameState = GAMESTATE.PLAY;
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start)
                         || Keyboard.GetState().IsKeyDown(Keys.P))
