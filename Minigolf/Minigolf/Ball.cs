@@ -23,7 +23,8 @@ namespace Minigolf
         protected GamePadState newGamepadState;
         protected GamePadState oldGamepadState;
         protected const float gamepadAntiBounceLimit = 0.2f;
-
+        protected Vector2 newVelocity = Vector2.Zero;
+        protected bool helpToGamePadHit = false;
 
         public Ball(Texture2D theTexture) : base(theTexture)
         {
@@ -120,6 +121,8 @@ namespace Minigolf
 
         public void ManageHitBall()
         {
+            
+
             #region Manage mouse
             newMouseState = Mouse.GetState();
             mousePosition = new Vector2(newMouseState.X, newMouseState.Y);
@@ -133,7 +136,7 @@ namespace Minigolf
             if ((newMouseState.LeftButton == ButtonState.Released) && (oldMouseState.LeftButton == ButtonState.Pressed))
             {
                 V.countHit++;
-                Vector2 newVelocity = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
+                newVelocity = new Vector2(this.position.X - mousePosition.X, this.position.Y - mousePosition.Y) / C.CUEATTENUATION;
                 if (H.Norme(newVelocity) >= C.MAXSPEED)
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
                 else
@@ -145,33 +148,68 @@ namespace Minigolf
             oldMouseState = newMouseState;
             #endregion
 
+            //#region Manage gamepad
+            //newGamepadState = GamePad.GetState(PlayerIndex.One);
+            //gamepadPosition = new Vector2(this.position.X + 250 * newGamepadState.ThumbSticks.Right.X, this.position.Y - 250 * newGamepadState.ThumbSticks.Right.Y);
+
+            //if (H.Norme(newGamepadState.ThumbSticks.Right) >= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
+            //{
+            //    gamePadCueOn = true;
+            //    selected = true;
+            //}
+            //if (H.Norme(newGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
+            //    gamePadCueOn = false;
+
+            //if (H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) > gamepadAntiBounceLimit)
+            //{
+            //    V.countHit++;
+            //    Vector2 newVelocity = new Vector2(-C.MAXSPEED * oldGamepadState.ThumbSticks.Right.X, C.MAXSPEED * oldGamepadState.ThumbSticks.Right.Y);
+            //    if (H.Norme(newVelocity) >= C.MAXSPEED)
+            //        velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
+            //    else
+            //        velocity = newVelocity;
+
+            //    C.golfShot.Play();
+            //    selected = false;
+            //}
+
+            //oldGamepadState = newGamepadState;
+
+            //#endregion
             #region Manage gamepad
             newGamepadState = GamePad.GetState(PlayerIndex.One);
-            gamepadPosition = new Vector2(this.position.X + 250 * newGamepadState.ThumbSticks.Right.X, this.position.Y - 250 * newGamepadState.ThumbSticks.Right.Y);
 
-            if (H.Norme(newGamepadState.ThumbSticks.Right) >= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
+            if (helpToGamePadHit)
+                gamepadPosition = new Vector2(this.position.X + 250 * newGamepadState.ThumbSticks.Right.X, this.position.Y - 250 * newGamepadState.ThumbSticks.Right.Y);            
+
+            if (newGamepadState.IsButtonDown(Buttons.LeftShoulder) /*&& oldGamepadState.IsButtonUp(Buttons.LeftShoulder)*/
+                && H.Norme(newGamepadState.ThumbSticks.Right) != 0f)
             {
                 gamePadCueOn = true;
+                helpToGamePadHit = true;
                 selected = true;
             }
-            if (H.Norme(newGamepadState.ThumbSticks.Right) < gamepadAntiBounceLimit)
-                gamePadCueOn = false;
+            if (newGamepadState.IsButtonUp(Buttons.LeftShoulder) && oldGamepadState.IsButtonDown(Buttons.LeftShoulder) && helpToGamePadHit)
+            {
+                helpToGamePadHit = false;
+                newVelocity = new Vector2(-C.MAXSPEED * newGamepadState.ThumbSticks.Right.X, C.MAXSPEED * newGamepadState.ThumbSticks.Right.Y);                
+            }
 
-            if (H.Norme(newGamepadState.ThumbSticks.Right) <= gamepadAntiBounceLimit && H.Norme(oldGamepadState.ThumbSticks.Right) > gamepadAntiBounceLimit)
+            if (H.Norme(newGamepadState.ThumbSticks.Right) == 0f && selected && !helpToGamePadHit)
             {
                 V.countHit++;
-                Vector2 newVelocity = new Vector2(-C.MAXSPEED * oldGamepadState.ThumbSticks.Right.X, C.MAXSPEED * oldGamepadState.ThumbSticks.Right.Y);
+
                 if (H.Norme(newVelocity) >= C.MAXSPEED)
                     velocity = Vector2.Normalize(newVelocity) * C.MAXSPEED;
                 else
                     velocity = newVelocity;
 
                 C.golfShot.Play();
+                gamePadCueOn = false;
                 selected = false;
             }
 
             oldGamepadState = newGamepadState;
-
             #endregion
         }
 
