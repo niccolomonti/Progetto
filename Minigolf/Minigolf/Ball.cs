@@ -174,13 +174,13 @@ namespace Minigolf
             //}
 
             //oldGamepadState = newGamepadState;
-
             //#endregion
+
             #region Manage gamepad
             newGamepadState = GamePad.GetState(PlayerIndex.One);
 
             if (helpToGamePadHit)
-                gamepadPosition = new Vector2(this.position.X + 250 * newGamepadState.ThumbSticks.Right.X, this.position.Y - 250 * newGamepadState.ThumbSticks.Right.Y);            
+                gamepadPosition = new Vector2(this.position.X + 250 * newGamepadState.ThumbSticks.Right.X, this.position.Y - 250 * newGamepadState.ThumbSticks.Right.Y);
 
             if (newGamepadState.IsButtonDown(Buttons.LeftShoulder) /*&& oldGamepadState.IsButtonUp(Buttons.LeftShoulder)*/
                 && H.Norme(newGamepadState.ThumbSticks.Right) != 0f)
@@ -192,10 +192,10 @@ namespace Minigolf
             if (newGamepadState.IsButtonUp(Buttons.LeftShoulder) && oldGamepadState.IsButtonDown(Buttons.LeftShoulder) && helpToGamePadHit)
             {
                 helpToGamePadHit = false;
-                newVelocity = new Vector2(-C.MAXSPEED * newGamepadState.ThumbSticks.Right.X, C.MAXSPEED * newGamepadState.ThumbSticks.Right.Y);                
+                newVelocity = new Vector2(-C.MAXSPEED * newGamepadState.ThumbSticks.Right.X, C.MAXSPEED * newGamepadState.ThumbSticks.Right.Y);
             }
 
-            if (H.Norme(newGamepadState.ThumbSticks.Right) == 0f && selected && !helpToGamePadHit)
+            if (H.Norme(newGamepadState.ThumbSticks.Right) == 0f && selected && !helpToGamePadHit && !mouseCueOn)
             {
                 V.countHit++;
 
